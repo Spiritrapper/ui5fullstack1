@@ -1,0 +1,192 @@
+/* Global Styles */
+html, body {
+    font-family: Arial, sans-serif !important;
+    background-color: #f0f0f0 !important;
+    margin: 0;
+    padding: 0;
+}
+
+/* Page Styles */
+.sapMPage {
+    background-color: #1c1c1c !important;
+    color: #ffffff !important;
+    
+}
+
+/* Header Toolbar */
+.sapMToolbar {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+}
+
+.sapMTitle {
+    font-size: 1.5em !important;
+    color: #ffcc00 !important;
+    align-items: center;
+}
+
+.sapMButton {
+    background-color: #444444 !important;
+    color: #ffffff !important;
+    border-radius: 5px !important;
+}
+
+.sapMButton.sapMButtonEmphasized {
+    background-color: #ffcc00 !important;
+    color: #000000 !important;
+}
+
+.sapMButton.sapMButtonReject {
+    background-color: #ff0000 !important;
+    color: #ffffff !important;
+}
+
+/* Table Styles */
+.sapMTable {
+    background-color: #2c2c2c !important;
+    color: #ffffff !important;
+}
+
+.sapMColumnListItem {
+    border-bottom: 1px solid #444444 !important;
+}
+
+.sapMColumn {
+    color: #ffcc00 !important;
+}
+
+
+.sapMObjectNumber {
+    
+}
+
+.price{
+    
+}
+
+.sapMObjectIdentifier .sapMObjectIdentifierTitle {
+    color: #ffffff !important;
+}
+
+
+.sapMText {
+    color: #000000 !important;
+}
+
+/* Image Styles */
+.sapMImage {
+    border: 3px solid #ffcc00 !important;
+    border-radius: 10px !important;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Panel Styles */
+.sapMPanel {
+    background-color: #333333 !important;
+    color: #000000 !important;
+    border-radius: 5px !important;
+    margin: 10px 0 !important;
+}
+
+.sapMPanelTitle {
+    color: #ffcc00 !important;
+}
+
+.sapMPanel .sapMText {
+    margin: 5px 0 !important;
+    color: #000000 !important;
+}
+
+/* Custom Rating Control */
+.wtProductRating {
+    background-color: #444444 !important;
+    padding: 10px !important;
+    border-radius: 5px !important;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Buttons in HBox */
+.sapMHBox .sapMButton {
+    margin-right: 10px !important;
+}
+
+.editButton {
+    margin-bottom: 5px !important
+}
+
+.deleteButton {
+    margin-bottom: 5px !important
+}
+
+
+
+/* Responsive Margin and Padding */
+.sapUiResponsiveMargin {
+    margin: 1rem;
+}
+
+@media (min-width: 600px) {
+    .sapUiResponsiveMargin {
+        margin: 2rem;
+    }
+}
+
+.sapUiResponsiveContentPadding {
+    padding: 1rem;
+}
+
+@media (min-width: 600px) {
+    .sapUiResponsiveContentPadding {
+        padding: 2rem;
+    }
+}
+
+/* Responsive Layout Styles */
+.mySimpleForm {
+    width: 100%;
+}
+
+@media (min-width: 600px) {
+    .mySimpleForm {
+        width: 50%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .mySimpleForm {
+        width: 30%;
+    }
+}
+
+/* Additional Responsive Styles */
+@media (max-width: 599px) {
+    .mySimpleForm .sapMInputBaseInner {
+        font-size: 1rem;
+    }
+
+    .mySimpleForm .sapMSelectListItemBase {
+        font-size: 0.875rem;
+    }
+}
+
+@media (min-width: 600px) {
+    .mySimpleForm .sapMInputBaseInner {
+        font-size: 1.125rem;
+    }
+
+    .mySimpleForm .sapMSelectListItemBase {
+        font-size: 1rem;
+    }
+}
+
+.homeLogo {
+    width: 300px;            /* 로고 이미지 크기 조정 */
+    height: auto;            /* 비율에 따라 자동으로 높이 조정 */
+    cursor: pointer;  
+    opacity: 100%;       /* 마우스 커서를 포인터로 변경 */
+}
+
+.homeBackground{
+    background-color: #fffefe !important;
+    color: #ffffff !important;
+}

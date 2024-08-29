@@ -1,0 +1,86 @@
+sap.ui.define([
+    "sap/ui/core/mvc/Controller",
+    "sap/ui/model/json/JSONModel",
+    "sap/m/MessageToast"
+], function (Controller, JSONModel, MessageToast) {
+    "use strict";
+
+    return Controller.extend("ui5.walkthrough.controller.Detail", {
+        formatCurrency: function (value, currency) {
+            return Format.formatCurrency(value, currency);
+        },
+        
+        onInit: function () {
+            
+            const oRouter = this.getOwnerComponent().getRouter();
+            oRouter.getRoute("detail").attachPatternMatched(this._onObjectMatched, this);
+
+            const oViewModel = new JSONModel({
+                busy: false,
+                delay: 0,
+                currency: "EUR"
+            });
+            this.getView().setModel(oViewModel, "view");
+        },
+
+        _onObjectMatched: async function (oEvent) {
+            const sInvoicePath = window.decodeURIComponent(oEvent.getParameter("arguments").invoicePath);
+            const oModel = this.getView().getModel("invoice");
+
+            this.getView().bindElement({
+                path: `/${sInvoicePath}`,
+                model: "invoice",
+                parameters: {
+                    expand:"" 
+                          // 필요에 따라 추가 데이터를 로드
+                },
+                events: {
+                    dataRequested: function () {
+                        this.getView().getModel("view").setProperty("/busy", true);
+                    }.bind(this),
+                    dataReceived: function () {
+                        this.getView().getModel("view").setProperty("/busy", false);
+                    }.bind(this)
+                }
+            });
+
+            this.byId("rating").reset(); // 평가 컴포넌트를 초기화합니다.
+        },
+
+        onNavBack: function () {
+            const oHistory = sap.ui.core.routing.History.getInstance();
+            const sPreviousHash = oHistory.getPreviousHash();
+
+            if (sPreviousHash !== undefined) {
+                window.history.go(-1);
+            } else {
+                const oRouter = this.getOwnerComponent().getRouter();
+                oRouter.navTo("overview", {}, true);
+            }
+        },
+
+        onRatingChange: function (oEvent) {
+            const fValue = oEvent.getParameter("value");
+            const oBindingContext = this.getView().getBindingContext("invoice");
+
+            if (oBindingContext) {
+                const sPath = oBindingContext.getPath();
+                const oModel = this.getView().getModel("invoice");
+
+                oModel.setProperty(sPath + "/UserRating", fValue);
+
+                // Save the rating change to the backend (if needed)
+                oModel.submitChanges({
+                    success: function () {
+                        MessageToast.show("Rating saved successfully.");
+                    },
+                    error: function () {
+                        MessageToast.show("Failed to save rating.");
+                    }
+                });
+            } else {
+                MessageToast.show("No item selected to rate.");
+            }
+        }
+    });
+});

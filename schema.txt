@@ -1,0 +1,139 @@
+-- running in dry mode ---
+Running build
+building project [/home/user/projects/DEMO], clean [true]
+cds-dk [8.1.2], cds [8.1.1], compiler [5.1.2], home [/home/user/projects/DEMO/node_modules/@sap/cds]
+
+{
+  build: {
+    target: 'gen',
+    tasks: [
+      { for: 'hana', src: 'db/', options: { model: ['db', 'srv', 'app', 'db/'] }}
+    ]
+  }
+}
+
+done > wrote output to:
+   gen/db/.build.js
+   gen/db/package-lock.json
+   gen/db/package.json
+   gen/db/src/.hdiconfig
+   gen/db/src/gen/.hdiconfig
+   gen/db/src/gen/.hdinamespace
+   gen/db/src/gen/InvoiceService.Invoices.hdbview
+   gen/db/src/gen/RequestService.Request.hdbview
+   gen/db/src/gen/RequestService.Request_State.hdbview
+   gen/db/src/gen/RequestService1.RequestServic1e.hdbview
+   gen/db/src/gen/demo.request.Request.hdbtable
+   gen/db/src/gen/demo.request.Request_state.hdbtable
+   gen/db/src/gen/demo.request1.Request1.hdbtable
+   gen/db/src/gen/my.invoice.app.Invoices.hdbtable
+   gen/db/undeploy.json
+
+build completed in 396 ms
+
+-- gen/db/src/gen/InvoiceService.Invoices.hdbview
+VIEW InvoiceService_Invoices AS SELECT
+  Invoices_0.InvoiceID,
+  Invoices_0.ProductName,
+  Invoices_0.Quantity,
+  Invoices_0.ShipperName,
+  Invoices_0.ExtendedPrice,
+  Invoices_0.CurrencyCode,
+  Invoices_0.Status,
+  Invoices_0.ImageURL,
+  Invoices_0.PlotSummary,
+  Invoices_0.RowNumber,
+  Invoices_0.ViewCount,
+  Invoices_0.Rating,
+  Invoices_0.AverageRating
+FROM my_invoice_app_Invoices AS Invoices_0
+
+-- gen/db/src/gen/RequestService.Request.hdbview
+VIEW RequestService_Request AS SELECT
+  Request_0.request_number,
+  Request_0.request_product,
+  Request_0.request_quantity,
+  Request_0.requestor,
+  Request_0.request_date,
+  Request_0.request_state_request_state_key,
+  Request_0.request_reason,
+  Request_0.request_estimated_price,
+  Request_0.request_reject_reason
+FROM demo_request_Request AS Request_0
+WITH ASSOCIATIONS (
+  MANY TO ONE JOIN RequestService_Request_State AS request_state ON (request_state.request_state_key = request_state_request_state_key)
+)
+
+-- gen/db/src/gen/RequestService.Request_State.hdbview
+VIEW RequestService_Request_State AS SELECT
+  Request_state_0.request_state_key,
+  Request_state_0.request_state_kor
+FROM demo_request_Request_state AS Request_state_0
+
+-- gen/db/src/gen/RequestService1.RequestServic1e.hdbview
+VIEW RequestService1_RequestServic1e AS SELECT
+  Request1_0.InvoiceID,
+  Request1_0.ProductName,
+  Request1_0.Quantity,
+  Request1_0.ShipperName,
+  Request1_0.ExtendedPrice,
+  Request1_0.CurrencyCode,
+  Request1_0.Status
+FROM demo_request1_Request1 AS Request1_0
+
+-- gen/db/src/gen/demo.request.Request.hdbtable
+COLUMN TABLE demo_request_Request (
+  request_number INTEGER NOT NULL,
+  request_product NVARCHAR(5000),
+  request_quantity INTEGER,
+  requestor NVARCHAR(5000),
+  request_date DATE,
+  request_state_request_state_key NVARCHAR(5000),
+  request_reason INTEGER,
+  request_estimated_price NVARCHAR(5000),
+  request_reject_reason NVARCHAR(5000),
+  PRIMARY KEY(request_number)
+) WITH ASSOCIATIONS (
+  MANY TO ONE JOIN demo_request_Request_state AS request_state ON (request_state.request_state_key = request_state_request_state_key)
+)
+
+-- gen/db/src/gen/demo.request.Request_state.hdbtable
+COLUMN TABLE demo_request_Request_state (
+  request_state_key NVARCHAR(5000) NOT NULL,
+  request_state_kor NVARCHAR(5000),
+  PRIMARY KEY(request_state_key)
+)
+
+-- gen/db/src/gen/demo.request1.Request1.hdbtable
+COLUMN TABLE demo_request1_Request1 (
+  InvoiceID NVARCHAR(36) NOT NULL,
+  ProductName NVARCHAR(111),
+  Quantity INTEGER,
+  ShipperName NVARCHAR(111),
+  ExtendedPrice DECIMAL(9, 2),
+  CurrencyCode NVARCHAR(5),
+  Status NVARCHAR(10),
+  PRIMARY KEY(InvoiceID)
+)
+
+-- gen/db/src/gen/my.invoice.app.Invoices.hdbtable
+COLUMN TABLE my_invoice_app_Invoices (
+  InvoiceID NVARCHAR(36) NOT NULL,
+  ProductName NVARCHAR(111),
+  Quantity NVARCHAR(111),
+  ShipperName NVARCHAR(111),
+  ExtendedPrice DECIMAL(9, 2),
+  CurrencyCode NVARCHAR(5),
+  Status NVARCHAR(10),
+  ImageURL NVARCHAR(255),
+  PlotSummary NVARCHAR(1000),
+  RowNumber INTEGER,
+  ViewCount INTEGER,
+  Rating DECIMAL(3, 2),
+  AverageRating DECIMAL(3, 2),
+  PRIMARY KEY(InvoiceID)
+)
+
+If not already done, use cds add hana to configure the project for SAP HANA.
+
+Done.

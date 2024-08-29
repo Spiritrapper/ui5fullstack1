@@ -1,0 +1,143 @@
+{
+    "_version": "1.58.0",
+    "sap.app": {
+        "id": "ui5.walkthrough",
+        "i18n": "i18n/i18n.properties",
+        "title": "{{appTitle}}",
+        "description": "{{appDescription}}",
+        "type": "application",
+        "applicationVersion": {
+            "version": "1.0.0"
+        },
+        "dataSources": {
+            "invoiceService": {
+                "uri": "https://port4005-workspaces-ws-z7sjw.us10.trial.applicationstudio.cloud.sap/odata/v4/invoice/",
+                "type": "OData",
+                "settings": {
+                    "odataVersion": "4.0"
+                }
+            },
+            "viewData": {
+                "type": "JSON",
+                "uri": "/"
+            }
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "componentUsages": {
+            "myComponent": {
+                "name": "ui5.walkthrough",
+                "manifest": "json"
+            }
+        },
+        "resourceRoots": {
+            "ui5.walkthrough": "./"
+        },
+        "dependencies": {
+            "minUI5Version": "1.108.0",
+            "libs": {
+                "sap.ui.core": {},
+                "sap.m": {},
+                "sap.ui.layout": {}
+            }
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "ui5.walkthrough.i18n.i18n",
+                    "supportedLocales": [
+                        "",
+                        "en"
+                    ],
+                    "fallbackLocale": "en"
+                }
+            },
+            "invoice": {
+                "type": "sap.ui.model.odata.v4.ODataModel",
+                "dataSource": "invoiceService",
+                "preload": true,
+                "settings": {
+                    "synchronizationMode": "None",
+                    "operationMode": "Server",
+                    "autoExpandSelect": true,
+                    "earlyRequests": true
+                }
+            },
+            "view": {
+                "type": "sap.ui.model.json.JSONModel",
+                "dataSource": "viewData"
+            }
+        },
+        "rootView": {
+            "viewName": "ui5.walkthrough.view.App",
+            "type": "XML",
+            "id": "app"
+        },
+        "resources": {
+            "css": [
+                {
+                    "uri": "themes/myTheme/theme.css"
+                }
+            ]
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "type": "View",
+                "viewType": "XML",
+                "path": "ui5.walkthrough.view",
+                "controlId": "app",
+                "controlAggregation": "pages"
+            },
+            "routes": [
+                {
+                    "pattern": "",
+                    "name": "home",
+                    "target": "home"
+                },
+                {
+                    "pattern": "overview",
+                    "name": "overview",
+                    "target": "overview"
+                },
+                {
+                    "pattern": "detail/{invoicePath}",
+                    "name": "detail",
+                    "target": "detail"
+                }
+            ],
+            "targets": {
+                "home": {
+                    "viewName": "Home",
+                    "viewLevel": 1,
+                    "controlAggregation": "pages"
+                },
+                "overview": {
+                    "viewName": "Overview",
+                    "viewLevel": 2,
+                    "controlId": "app",
+                    "controlAggregation": "pages"
+                },
+                "detail": {
+                    "viewName": "Detail",
+                    "viewLevel": 3,
+                    "controlId": "app",
+                    "controlAggregation": "pages"
+                }
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        }
+    }
+}

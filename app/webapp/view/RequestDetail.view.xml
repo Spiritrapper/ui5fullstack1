@@ -1,0 +1,56 @@
+<mvc:View
+    controllerName="ui5.walkthrough.controller.RequestDetail"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form">
+
+    <Page title="Request Detail">
+        <content>
+            <f:SimpleForm layout="ResponsiveGridLayout">
+                <f:content>
+                    <Label text="Request Number"/>
+                    <Text text="{detailModel>/request_number}" />
+                    
+                    <Label text="Product"/>
+                    <Input value="{detailModel>/request_product}" />
+                    
+                    <Label text="Quantity"/>
+                    <Input type="Number" value="{detailModel>/request_quantity}" />
+                    
+                    <Label text="Requestor"/>
+                    <Input value="{detailModel>/requestor}" />
+                    
+                    <Label text="Request Date"/>
+                    <DatePicker value="{detailModel>/request_date}" />
+                    
+                    <Label text="State"/>
+                    <Select
+                        selectedKey="{detailModel>/request_state/request_state_key}"
+                        items="{request>/Request_state}">
+                        <core:Item key="{request>request_state_key}" text="{request>request_state_kor}" />
+                    </Select>
+                    
+                    
+                    <Label text="Reason"/>
+                    <Input value="{detailModel>/request_reason}" />
+                    
+                    <Label text="Estimated Price"/>
+                    <Input type="Number" value="{detailModel>/request_estimated_price}" />
+                    
+                    <Label text="Reject Reason"/>
+                    <Input value="{detailModel>/request_reject_reason}" />
+                </f:content>
+              
+            </f:SimpleForm>
+              <Toolbar>
+                <ToolbarSpacer/>
+                <Button text="Save" press=".onSave" type="Emphasized"  visible="{global>/isAdminMode}"/>
+                <Button text="Cancel" press=".onCancel" />
+            </Toolbar>
+        </content>
+        <footer>
+            
+        </footer>
+    </Page>
+</mvc:View>

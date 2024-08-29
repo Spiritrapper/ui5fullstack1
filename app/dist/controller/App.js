@@ -1,0 +1,2 @@
+sap.ui.define(["sap/ui/core/mvc/Controller","sap/ui/core/UIComponent","sap/ui/core/Fragment"],function(e,o,r){"use strict";return e.extend("imropro.controller.App",{onInit:function(){var e=o.getRouterFor(this);e.initialize()}})});
+//# sourceMappingURL=App.js.map

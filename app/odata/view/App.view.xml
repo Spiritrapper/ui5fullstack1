@@ -1,0 +1,81 @@
+<mvc:View
+    controllerName="sap.ui.core.tutorial.odatav4.controller.App"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    displayBlock="true"
+    <!-- 페이지의 제목을 설정 -->]
+    <Shell>
+		<App busy="{appView>/busy}" class="sapUiSizeCompact">
+    <Page title="{i18n>peoplePageTitle}">
+        <content>
+            <!-- 사용자 목록을 표시하는 테이블 -->
+            <Table
+                id="peopleList"
+                growing="true"
+                growingThreshold="10"
+                items="{path: '/People',
+								parameters: {
+									$count: true}}">
+
+                <!-- 테이블의 툴바를 정의 -->
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <content>
+                            <ToolbarSpacer/>
+                            <SearchField
+											id="searchField"
+											width="20%"
+											placeholder="{i18n>searchFieldPlaceholder}"
+											search=".onSearch"/>
+                            <Button
+                                id="refreshUsersButton"
+                                icon="sap-icon://refresh"
+                                tooltip="{i18n>refreshButtonText}"
+                                press=".onRefresh"/>
+                                <Button
+											id="sortUsersButton"
+											icon="sap-icon://sort"
+											tooltip="{i18n>sortButtonText}"
+											press="onSort"/>
+                        </content>
+                    </OverflowToolbar>
+                </headerToolbar>
+
+                <!-- 테이블의 열 정의 -->
+                <columns>
+                    <!-- 첫 번째 열: 사용자 이름 -->
+                    <Column>
+                        <Text text="{i18n>userNameLabelText}"/>
+                    </Column>
+                    <!-- 두 번째 열: 사용자 이름 -->
+                    <Column>
+                        <Text text="{i18n>firstNameLabelText}"/>
+                    </Column>
+                    <!-- 세 번째 열: 사용자 성 -->
+                    <Column>
+                        <Text text="{i18n>lastNameLabelText}"/>
+                    </Column>
+                    <!-- 네 번째 열: 사용자 나이 -->
+                    <Column>
+                        <Text text="{i18n>ageLabelText}"/>
+                    </Column>
+                </columns>
+
+                <!-- 테이블의 행 정의 -->
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{UserName}"/>
+                            <Text text="{FirstName}"/>
+                            <Text text="{LastName}"/>
+                            <Text text="{Age}"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+    </App>
+</Shell>
+</mvc:View>
+

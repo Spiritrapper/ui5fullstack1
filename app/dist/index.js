@@ -1,0 +1,2 @@
+sap.ui.getCore().attachInit(function(){sap.ui.require(["sap/ui/core/ComponentContainer"],function(n){new n({name:"imropro",settings:{id:"app"},async:true}).placeAt("content")})});
+//# sourceMappingURL=index.js.map

@@ -1,0 +1,15 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    controllerName="imropro.controller.App">
+    <App id="app">
+        <pages>
+            <Page id="mainPage" title="IMRO Product Management">
+                <content>
+                    <!-- Include View1 directly inside the App or Page -->
+                    <mvc:XMLView viewName="imropro.view.View1" id="view1"/>
+                </content>
+            </Page>
+        </pages>
+    </App>
+</mvc:View>

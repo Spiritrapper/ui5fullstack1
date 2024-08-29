@@ -1,0 +1,114 @@
+<mvc:View controllerName="com.nttfc.nttfc.controller.Home"
+    displayBlock="true"
+    xmlns="sap.m"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:core="sap.ui.core">
+   <Shell id="shell">
+        <App id="app">
+            <pages>
+                <Page id="page" title="{i18n>title}">
+                    <content>
+                        <Table items="{mainModel>/Players}" id="table0" mode="SingleSelectLeft" selectionChange="onSelect">
+                            <headerToolbar>
+                                <OverflowToolbar>
+                                    <content>
+                                        <ToolbarSpacer />
+                                        <SearchField id="searchField" width="20%" placeholder="search" search=".onSearch" />
+                                        <Button id="createButton" icon="sap-icon://add" tooltip="Create" visible="true" press="onOpenAddDialog">
+                                            <layoutData>
+                                                <OverflowToolbarLayoutData priority="NeverOverflow" />
+                                            </layoutData>
+                                        </Button>
+                                        <Button id="deleteButton" icon="sap-icon://delete" tooltip="Delete" visible="false" press="onDelete">
+                                            <layoutData>
+                                                <OverflowToolbarLayoutData priority="NeverOverflow" />
+                                            </layoutData>
+                                        </Button>
+
+                                        <Button id="saveButton" text="Save" type="Emphasized" visible="false" enabled="true" press="onSave" />
+                                        <Button id="editModeButton" visible="true" icon="sap-icon://edit" tooltip="Edit" press="onEditMode">
+                                            <layoutData>
+                                                <OverflowToolbarLayoutData priority="NeverOverflow" />
+                                            </layoutData>
+                                        </Button>
+
+                                    </content>
+                                    <dependents>
+                                       <Dialog id="OpenDialog" title="Create Sales Order">
+                                            <buttons>
+                                                <Button id="confirmCreate" text="Create" press=".onCreate" type="Emphasized" />
+                                                <Button id="cancelCreate" text="Cancel" press="onCancelDialog" type="Transparent" />
+                                            </buttons>
+                                            <f:SimpleForm editable="true" layout="ResponsiveGridLayout">
+                                                <f:content>
+                                                    <Label text="Player Name" required="true" />
+                                                    <Input id="idname" change="onNameChange" value=""/>
+                                                    <Label text="Height" />
+                                                    <Input id="idheight" value="" />
+                                                    <Label text="Age" />
+                                                    <Input id="idage"  value="" />
+                                                    <Label text="Shirt Number" />
+                                                    <Input id="idshirt_number" value=""  />
+                                                    <Label text="Position" />
+                                                    <Input id="idposition" value="" />
+                                                    <Label text="Nationality" />
+                                                    <Input id="idnationality" value="" />
+                                                </f:content>
+                                            </f:SimpleForm> 
+                                        </Dialog>
+                                    </dependents>
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <items>
+                                <ColumnListItem type="Active" id="item0">
+                                    <cells>
+                                        <Text id="id1" text="{mainModel>name}"/>
+                                        <Text id="id2" text="{mainModel>height}"/>
+                                        <Text id="id3" text="{mainModel>age}"/>
+                                        <Text id="id4" text="{mainModel>shirt_number}"/>
+                                        <Text id="id5" text="{mainModel>position}"/>
+                                        <Text id="id6" text="{mainModel>nationality}"/>
+                                        <Button id="id7" icon="sap-icon://edit" press="onSelect" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                            <columns>
+                                <Column>
+                                    <header>
+                                        <Label text="Player Name" />
+                                    </header>
+                                </Column>
+                                <Column>
+                                    <header>
+                                        <Label text="Height" />
+                                    </header>
+                                </Column>
+                                <Column>
+                                    <header>
+                                        <Label text="Age" />
+                                    </header>
+                                </Column>
+                                <Column>
+                                    <header>
+                                        <Label text="Shirt Number" />
+                                    </header>
+                                </Column>
+                                <Column>
+                                    <header>
+                                        <Label text="Position" />
+                                    </header>
+                                </Column>
+                                  <Column>
+                                    <header>
+                                        <Label text="Nationality" />
+                                    </header>
+                                </Column>
+                            </columns>
+                        </Table>
+                    </content>
+                </Page>
+            </pages>
+        </App>
+    </Shell>
+</mvc:View>
+

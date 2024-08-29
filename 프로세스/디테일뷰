@@ -1,0 +1,65 @@
+<mvc:View
+    controllerName="ui5.walkthrough.controller.Detail"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:wt="ui5.walkthrough.control"
+>
+    <Page
+        title="{i18n>detailPageTitle}"
+        showNavButton="true"
+        navButtonPress=".onNavBack"
+    >
+        <VBox>
+            <!-- 영화 포스터 -->
+            <Image
+                src="{invoice>ImageURL}"
+                class="sapUiSmallMargin"
+                width="500px" 
+                height="auto"  
+                visible="{= !!${invoice>ImageURL} }" 
+            />
+            
+            <!-- 영화 정보 패널 -->
+            <Panel
+                headerText="{invoice>ProductName}"
+                class="sapUiSmallMargin"
+            >
+                <VBox class="sapUiSmallMargin">
+                    <Text text="{i18n>shipperNameTitle}: {invoice>ShipperName}" />
+                    <Text text="{i18n>quantityTitle}: {invoice>Quantity}" />
+					<Text text="{i18n>priceTitle}: {invoice>ExtendedPrice} {view>/currency}" />
+
+                    <!-- <Text text="{i18n>priceTitle}: { 
+                        parts: [
+                            'invoice>ExtendedPrice',
+                            'view>/currency'
+                        ],
+                        type: 'sap.ui.model.type.Currency',
+                        formatOptions: {
+                            showMeasure: false
+                        }
+                    } {view>/currency}" /> -->
+                </VBox>
+            </Panel>
+
+            <!-- 줄거리 -->
+            <Panel
+                headerText="{i18n>plotSummaryTitle}"
+                class="sapUiSmallMargin"
+            >
+                <Text
+                    text="{invoice>PlotSummary}"
+                    
+                    class="sapUiSmallMargin"
+                />
+            </Panel>
+
+            <!-- 영화 평가 -->
+            <wt:ProdeuctRating
+                id="rating"
+                class="sapUiSmallMarginBeginEnd"
+                change=".onRatingChange"
+            />
+        </VBox>
+    </Page>
+</mvc:View>

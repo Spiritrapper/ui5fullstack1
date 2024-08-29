@@ -1,0 +1,585 @@
+sap.ui.define([  // SAP UI5 모듈을 정의하고 필요한 라이브러리를 로드합니다.
+    "sap/ui/core/mvc/Controller",  // MVC 패턴의 컨트롤러 클래스를 로드합니다.
+    "sap/ui/model/json/JSONModel",  // JSON 형식의 데이터 모델을 로드합니다.
+    "sap/m/MessageToast",  // 메시지 토스트(알림) 컨트롤을 로드합니다.
+    "sap/m/Dialog",  // 다이얼로그(팝업) 컨트롤을 로드합니다.
+    "sap/m/Text",  // 텍스트 컨트롤을 로드합니다.
+    "sap/m/Input",  // 입력 필드 컨트롤을 로드합니다.
+    "sap/m/Select",  // 드롭다운 선택 컨트롤을 로드합니다.
+    "sap/ui/core/Item",  // 드롭다운 아이템 컨트롤을 로드합니다.
+    "sap/m/Button",  // 버튼 컨트롤을 로드합니다.
+    "sap/m/TextArea"  // 텍스트 영역 컨트롤을 로드합니다.
+], function (Controller, JSONModel, MessageToast, Dialog, Text, Input, Select, Item, Button, TextArea) {
+    "use strict";  // 엄격 모드를 사용하여 잠재적인 오류를 방지합니다.
+
+    return Controller.extend("ui5.walkthrough.controller.Detail", {  // "Detail" 컨트롤러를 정의합니다.
+
+        formatCurrency: function (value, currency) {  // 화폐 형식을 지정하는 헬퍼 함수입니다.
+            return Format.formatCurrency(value, currency);  // 주어진 값과 통화로 화폐 형식을 반환합니다.
+        },
+
+        onInit: function () {  // 컨트롤러 초기화 시 실행되는 함수입니다.
+
+            const oRouter = this.getOwnerComponent().getRouter();  // 라우터를 가져와 초기화합니다.
+            oRouter.getRoute("detail").attachPatternMatched(this._onObjectMatched, this);  // "detail" 경로가 매칭되었을 때 이벤트를 처리합니다.
+
+            const oViewModel = new JSONModel({  // 뷰 모델을 초기화합니다.
+                currency: "EUR",  // 기본 통화로 유로를 설정합니다.
+                busy: false,  // 초기화 시 바쁜 상태(false)로 설정합니다.
+                delay: 0,  // 바쁜 상태의 지연 시간을 0으로 설정합니다.
+                selectedItem: null  // 선택된 항목을 초기화합니다.
+            });
+            this.getView().setModel(oViewModel, "view");  // 뷰 모델을 "view" 이름으로 뷰에 설정합니다.
+
+            let oResourceModel = this.getView().getModel("i18n");  // i18n(국제화) 모델을 가져옵니다.
+            if (!oResourceModel) {  // 모델이 없으면 새로운 리소스 모델을 생성합니다.
+                oResourceModel = new sap.ui.model.resource.ResourceModel({
+                    bundleName: "ui5.walkthrough.i18n.i18n"  // 번들 이름을 설정합니다.
+                });
+                this.getView().setModel(oResourceModel, "i18n");  // 생성된 모델을 뷰에 설정합니다.
+            }
+
+            const oResourceBundle = oResourceModel.getResourceBundle();  // 리소스 번들을 가져옵니다.
+
+            const oStatusModel = new JSONModel({  // 상태 모델을 초기화합니다.
+                statuses: [  // 상태 배열을 정의합니다.
+                    { key: 'A', text: oResourceBundle.getText('invoiceStatusA') },  // 상태 'A'를 추가합니다.
+                    { key: 'B', text: oResourceBundle.getText('invoiceStatusB') },  // 상태 'B'를 추가합니다.
+                    { key: 'D', text: oResourceBundle.getText('invoiceStatusD') },  // 상태 'D'를 추가합니다.
+                    { key: 'E', text: oResourceBundle.getText('invoiceStatusE') },  // 상태 'E'를 추가합니다.
+                    { key: 'F', text: oResourceBundle.getText('invoiceStatusF') }   // 상태 'F'를 추가합니다.
+                ]
+            });
+            this.getView().setModel(oStatusModel, 'statuses');  // 상태 모델을 "statuses" 이름으로 뷰에 설정합니다.
+
+            const oCurrencyModel = new JSONModel({  // 통화 모델을 초기화합니다.
+                currencies: [  // 통화 배열을 정의합니다.
+                    { key: 'EUR', text: 'Euro' },  // 유로 통화를 추가합니다.
+                    { key: 'USD', text: 'US Dollar' }  // 미국 달러 통화를 추가합니다.
+                ]
+            });
+            this.getView().setModel(oCurrencyModel, 'currencies');  // 통화 모델을 "currencies" 이름으로 뷰에 설정합니다.
+        },
+
+        _onObjectMatched: async function (oEvent) {  // 특정 경로가 매칭될 때 호출되는 함수입니다.
+            const sInvoicePath = window.decodeURIComponent(oEvent.getParameter("arguments").invoicePath);  // 인보이스 경로를 디코딩합니다.
+            const oModel = this.getView().getModel("invoice");  // 인보이스 모델을 가져옵니다.
+
+            this.getView().bindElement({  // 뷰 요소를 특정 인보이스 경로에 바인딩합니다.
+                path: `/${sInvoicePath}`,  // 바인딩 경로를 설정합니다.
+                model: "invoice",  // 인보이스 모델을 사용합니다.
+                parameters: {
+                    expand: ""  // 필요에 따라 추가 데이터를 로드할 수 있습니다.
+                },
+                events: {
+                    dataRequested: function () {  // 데이터 요청 시 발생하는 이벤트입니다.
+                        this.getView().getModel("view").setProperty("/busy", true);  // 바쁜 상태로 설정합니다.
+                    }.bind(this),
+                    dataReceived: function () {  // 데이터 수신 시 발생하는 이벤트입니다.
+                        this.getView().getModel("view").setProperty("/busy", false);  // 바쁜 상태를 해제합니다.
+                    }.bind(this)
+                }
+            });
+
+            this.byId("rating").reset();  // 평점 컴포넌트를 초기화합니다.
+        },
+
+        onEdit: async function () {  // 편집 버튼 클릭 시 호출되는 함수입니다.
+            const oModel = this.getView().getModel("invoice");  // 인보이스 모델을 가져옵니다.
+            const oBindingContext = this.getView().getBindingContext("invoice");  // 현재 바인딩된 컨텍스트를 가져옵니다.
+
+            if (oBindingContext) {  // 바인딩된 컨텍스트가 존재하면
+                const sPath = oBindingContext.getPath();  // 바인딩 경로를 가져옵니다.
+                await this._openEditDialog(sPath, "Edit");  // 편집 다이얼로그를 엽니다.
+            } else {
+                MessageToast.show("No item selected to edit.");  // 선택된 항목이 없다는 메시지를 표시합니다.
+            }
+        },
+
+        onDelete: async function () {  // 삭제 버튼 클릭 시 호출되는 함수입니다.
+            const oModel = this.getView().getModel("invoice");  // 인보이스 모델을 가져옵니다.
+            const oBindingContext = this.getView().getBindingContext("invoice");  // 현재 바인딩된 컨텍스트를 가져옵니다.
+
+            if (oBindingContext) {  // 바인딩된 컨텍스트가 존재하면
+                const sPath = oBindingContext.getPath();  // 바인딩 경로를 가져옵니다.
+
+                try {
+                    await oBindingContext.delete("$auto");  // 자동으로 해당 항목을 삭제합니다.
+                    MessageToast.show("Invoice deleted successfully.");  // 삭제 성공 메시지를 표시합니다.
+                    this.onNavBack();  // 목록으로 돌아갑니다.
+                } catch (error) {
+                    MessageToast.show("Failed to delete invoice.");  // 삭제 실패 메시지를 표시합니다.
+                }
+            } else {
+                MessageToast.show("No item selected to delete.");  // 선택된 항목이 없다는 메시지를 표시합니다.
+            }
+        },
+
+        onNavBack: function () {  // 이전 화면으로 돌아가는 함수입니다.
+            const oHistory = sap.ui.core.routing.History.getInstance();  // 히스토리 인스턴스를 가져옵니다.
+            const sPreviousHash = oHistory.getPreviousHash();  // 이전 해시(경로)를 가져옵니다.
+
+            if (sPreviousHash !== undefined) {  // 이전 해시가 존재하면
+                window.history.go(-1);  // 이전 페이지로 이동합니다.
+            } else {
+                const oRouter = this.getOwnerComponent().getRouter();  // 라우터를 가져옵니다.
+                oRouter.navTo("overview", {}, true);  // "overview" 경로로 강제 이동합니다.
+            }
+        },
+
+        _openEditDialog: function (sPath, sAction) {  // 편집 다이얼로그를 여는 함수입니다.
+            const oView = this.getView();  // 현재 뷰를 가져옵니다.
+            const sUniqueId = jQuery.sap.uid();  // 고유 ID를 생성합니다.
+            const oDialog = new Dialog({  // 새로운 다이얼로그를 생성합니다.
+                title: sAction === "Add" ? "Invoice 추가" : "Invoice 수정",  // 다이얼로그의 제목을 설정합니다.
+                content: [  // 다이얼로그 내용(컨트롤들)을 정의합니다.
+                    new Input(this.createId(sUniqueId + "-productNameInput"), { placeholder: "Title", value: sAction === "Edit" ? "{invoice>ProductName}" : "" }),  // 제목 입력 필드를 생성합니다.
+                    new Input(this.createId(sUniqueId + "-quantityInput"), { placeholder: "Genre", value: sAction === "Edit" ? "{invoice>Quantity}" : "" }),  // 장르 입력 필드를 생성합니다.
+                    new Input(this.createId(sUniqueId + "-shipperNameInput"), { placeholder: "Production company", value: sAction === "Edit" ? "{invoice>ShipperName}" : "" }),  // 제작사 입력 필드를 생성합니다.
+                    new Select({  // 상태 선택 필드를 생성합니다.
+                        id: this.createId(sUniqueId + "-statusSelect"),
+                        items: {
+                            path: 'statuses>/statuses',  // 상태 모델 경로를 설정합니다.
+                            template: new Item({
+                                key: '{statuses>key}',
+                                text: '{statuses>text}'
+                            })
+                        }
+                    }),
+                    new Input(this.createId(sUniqueId + "-extendedPriceInput"), { placeholder: "Extended Price", type: "Number", value: sAction === "Edit" ? "{invoice>ExtendedPrice}" : "" }),  // 확장 가격 입력 필드를 생성합니다.
+                    new Select({  // 통화 선택 필드를 생성합니다.
+                        id: this.createId(sUniqueId + "-currencySelect"),
+                        items: {
+                            path: 'currencies>/currencies',  // 통화 모델 경로를 설정합니다.
+                            template: new Item({
+                                key: '{currencies>key}',
+                                text: '{currencies>text}'
+                            })
+                        },
+                        selectedKey: sAction === "Edit" ? "{invoice>CurrencyCode}" : "EUR"  // 선택된 통화를 설정합니다.
+                    }),
+                    // 추가된 필드들
+                    new Input(this.createId(sUniqueId + "-imageURLInput"), { placeholder: "Image URL", value: sAction === "Edit" ? "{invoice>ImageURL}" : "" }),  // 이미지 URL 입력 필드를 생성합니다.
+                    new TextArea(this.createId(sUniqueId + "-plotSummaryInput"), { placeholder: "Plot Summary", value: sAction === "Edit" ? "{invoice>PlotSummary}" : "", rows: 5 })  // 줄거리 입력 필드를 생성합니다.
+                ],
+                beginButton: new Button({  // 다이얼로그의 시작 버튼을 생성합니다.
+                    text: sAction === "Add" ? "저장" : "수정",  // 버튼의 텍스트를 설정합니다.
+                    press: async () => {  // 버튼 클릭 시 실행될 함수입니다.
+                        const oModel = oView.getModel("invoice");  // 인보이스 모델을 가져옵니다.
+                        const oData = {  // 입력된 데이터를 객체로 수집합니다.
+                            ProductName: this.byId(sUniqueId + "-productNameInput").getValue(),  // 제품명을 가져옵니다.
+                            Quantity: this.byId(sUniqueId + "-quantityInput").getValue(),  // 수량을 가져옵니다.
+                            ShipperName: this.byId(sUniqueId + "-shipperNameInput").getValue(),  // 배송자 이름을 가져옵니다.
+                            Status: this.byId(sUniqueId + "-statusSelect").getSelectedKey(),  // 상태를 가져옵니다.
+                            ExtendedPrice: parseFloat(this.byId(sUniqueId + "-extendedPriceInput").getValue()),  // 확장 가격을 가져옵니다.
+                            CurrencyCode: this.byId(sUniqueId + "-currencySelect").getSelectedKey(),  // 통화 코드를 가져옵니다.
+                            ImageURL: this.byId(sUniqueId + "-imageURLInput").getValue(),  // 이미지 URL을 가져옵니다.
+                            PlotSummary: this.byId(sUniqueId + "-plotSummaryInput").getValue()  // 줄거리를 가져옵니다.
+                        };
+
+                        try {
+                            if (sAction === "Add") {  // 추가 작업일 경우
+                                const oListBinding = oModel.bindList("/Invoices");  // 인보이스 목록을 바인딩합니다.
+                                const oContext = oListBinding.create(oData);  // 새로운 인보이스 항목을 생성합니다.
+                                await oContext.created();  // 생성 완료를 기다립니다.
+                                MessageToast.show("Invoice가 성공적으로 추가되었습니다.");  // 추가 성공 메시지를 표시합니다.
+                            } else if (sAction === "Edit") {  // 수정 작업일 경우
+                                const oBindingContext = oDialog.getBindingContext("invoice");  // 다이얼로그의 바인딩 컨텍스트를 가져옵니다.
+                                await oBindingContext.requestObject();  // 데이터 로딩을 기다립니다.
+                                Object.keys(oData).forEach(key => {  // 데이터 객체의 키들을 순회하며
+                                    oBindingContext.setProperty(key, oData[key]);  // 바인딩된 컨텍스트의 프로퍼티를 업데이트합니다.
+                                });
+                                await oModel.submitBatch("$auto");  // 변경 사항을 일괄 제출합니다.
+                                MessageToast.show("Invoice가 성공적으로 수정되었습니다.");  // 수정 성공 메시지를 표시합니다.
+                                await oModel.refresh();  // 모델을 새로고침합니다.
+                            }
+                            
+                            oDialog.close();  // 다이얼로그를 닫습니다.
+                        } catch (error) {  // 오류가 발생할 경우
+                            console.error(sAction === "Add" ? "추가 실패" : "수정 실패", error);  // 오류 메시지를 콘솔에 출력합니다.
+                        }
+                    }
+                }),
+            });
+        }
+    });
+});
+
+
+
+
+
+
+sap.ui.define([
+    "sap/ui/core/mvc/Controller",
+    "sap/ui/model/json/JSONModel",
+    "sap/m/MessageToast",
+    "sap/m/Dialog",
+    "sap/m/Text",
+    "sap/m/Input",
+    "sap/m/Select",
+    "sap/ui/core/Item",
+    "sap/m/Button",
+    "sap/m/TextArea",
+
+], function (Controller, JSONModel, MessageToast, Dialog, Text, Input, Select, Item, Button, TextArea) {
+    "use strict";
+
+
+    return Controller.extend("ui5.walkthrough.controller.Detail", {
+        formatCurrency: function (value, currency) {
+            return Format.formatCurrency(value, currency);
+        },
+
+        onInit: function () {
+
+
+            // Initialize Router
+            const oRouter = this.getOwnerComponent().getRouter();
+            oRouter.getRoute("detail").attachPatternMatched(this._onObjectMatched, this);
+
+            // Initialize View Model
+            const oViewModel = new JSONModel({
+                currency: "EUR",
+                busy: false,
+                delay: 0,
+                selectedItem: null
+            });
+            this.getView().setModel(oViewModel, "view");
+
+            // Initialize Resource Model
+            let oResourceModel = this.getView().getModel("i18n");
+            if (!oResourceModel) {
+                oResourceModel = new sap.ui.model.resource.ResourceModel({
+                    bundleName: "ui5.walkthrough.i18n.i18n"
+                });
+                this.getView().setModel(oResourceModel, "i18n");
+            }
+
+            const oResourceBundle = oResourceModel.getResourceBundle();
+
+            // Initialize Status Model
+            const oStatusModel = new JSONModel({
+                statuses: [
+                    { key: 'A', text: oResourceBundle.getText('invoiceStatusA') },
+                    { key: 'B', text: oResourceBundle.getText('invoiceStatusB') },
+                    { key: 'D', text: oResourceBundle.getText('invoiceStatusD') },
+                    { key: 'E', text: oResourceBundle.getText('invoiceStatusE') },
+                    { key: 'F', text: oResourceBundle.getText('invoiceStatusF') }
+                ]
+            });
+            this.getView().setModel(oStatusModel, 'statuses');
+
+            // Initialize Currency Model
+            const oCurrencyModel = new JSONModel({
+                currencies: [
+                    { key: 'EUR', text: 'Euro' },
+                    { key: 'USD', text: 'US Dollar' }
+                ]
+            });
+            this.getView().setModel(oCurrencyModel, 'currencies');
+
+
+        },
+
+        _onObjectMatched: async function (oEvent) {
+            const sInvoicePath = window.decodeURIComponent(oEvent.getParameter("arguments").invoicePath);
+            const oModel = this.getView().getModel("invoice");
+
+            this.getView().bindElement({
+                path: `/${sInvoicePath}`,
+                model: "invoice",
+                parameters: {
+                    expand: "" // 필요에 따라 추가 데이터를 로드
+                },
+                events: {
+                    dataRequested: function () {
+                        this.getView().getModel("view").setProperty("/busy", true);
+                    }.bind(this),
+                    dataReceived: function () {
+                        this.getView().getModel("view").setProperty("/busy", false);
+                    }.bind(this)
+                }
+            });
+
+            this.byId("rating").reset(); // 평가 컴포넌트를 초기화합니다.
+        },
+
+        onEdit: async function () {
+            const oModel = this.getView().getModel("invoice");
+            const oBindingContext = this.getView().getBindingContext("invoice");
+
+            if (oBindingContext) {
+                const sPath = oBindingContext.getPath();
+                await this._openEditDialog(sPath, "Edit");
+            } else {
+                MessageToast.show("No item selected to edit.");
+            }
+        },
+
+        onDelete: async function () {
+            const oModel = this.getView().getModel("invoice");
+            const oBindingContext = this.getView().getBindingContext("invoice");
+
+            if (oBindingContext) {
+                const sPath = oBindingContext.getPath();
+
+                try {
+                    await oBindingContext.delete("$auto");
+                    MessageToast.show("Invoice deleted successfully.");
+
+                    // 삭제 후 InvoiceList로 네비게이션하면서 refresh 파라미터를 true로 설정
+                    this.getOwnerComponent().getRouter().navTo("overview", {}, true);
+
+                    // 또는 이벤트 버스를 사용하여 삭제 이벤트를 발생시킵니다
+                    sap.ui.getCore().getEventBus().publish("InvoiceList", "RefreshData");
+                    // this.getOwnerComponent().getRouter().navTo("overview", {}, true);
+                    //this._refreshTable(); 
+                    // this.onNavBack(); // Navigate back to list
+                } catch (error) {
+                    MessageToast.show("Failed to delete invoice.");
+                }
+            } else {
+                MessageToast.show("No item selected to delete.");
+            }
+        },
+
+        statusText: function (sStatus) {
+            var oResourceBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+            switch (sStatus) {
+                case "A":
+                    return oResourceBundle.getText("invoiceStatusA");
+                case "B":
+                    return oResourceBundle.getText("invoiceStatusB");
+                case "C":
+                    return oResourceBundle.getText("invoiceStatusC");
+                case "D":
+                    return oResourceBundle.getText("invoiceStatusD");
+                case "E":
+                    return oResourceBundle.getText("invoiceStatusE");
+                case "F":
+                    return oResourceBundle.getText("invoiceStatusF");
+                default:
+                    return sStatus;
+            }
+        },
+
+        // _refreshTable: function () {
+        //     // Get the table and its binding
+        //     const oTable = this.byId("yourTableId"); // Replace 'yourTableId' with the actual ID of your table
+        //     const oTableBinding = oTable.getBinding("items"); // Assuming 'items' is the aggregation name
+
+        //     if (oTableBinding) {
+        //         // Refresh the binding to reload data
+        //         oTableBinding.refresh(true);
+        //     }
+        // },
+
+        onNavBack: function () {
+            const oHistory = sap.ui.core.routing.History.getInstance();
+            const sPreviousHash = oHistory.getPreviousHash();
+
+            if (sPreviousHash !== undefined) {
+                window.history.go(-1);
+            } else {
+                const oRouter = this.getOwnerComponent().getRouter();
+                oRouter.navTo("overview", {}, true);
+            }
+        },
+
+        _openEditDialog: function (sPath, sAction) {
+            const oView = this.getView();
+            const sUniqueId = jQuery.sap.uid();
+            const oDialog = new Dialog({
+                title: sAction === "Add" ? "Invoice 추가" : "Invoice 수정",
+
+                content: [
+
+                    new Input(this.createId(sUniqueId + "-productNameInput"), { placeholder: "Title", value: sAction === "Edit" ? "{invoice>ProductName}" : "" }),
+                    new Input(this.createId(sUniqueId + "-quantityInput"), { placeholder: "Genre", value: sAction === "Edit" ? "{invoice>Quantity}" : "" }),
+                    new Input(this.createId(sUniqueId + "-shipperNameInput"), { placeholder: "Production company", value: sAction === "Edit" ? "{invoice>ShipperName}" : "" }),
+                    new Select({
+                        id: this.createId(sUniqueId + "-statusSelect"),
+                        items: {
+                            path: 'statuses>/statuses',
+                            template: new Item({
+                                key: '{statuses>key}',
+                                text: '{statuses>text}'
+                            })
+                        }
+                    }),
+                    new Input(this.createId(sUniqueId + "-extendedPriceInput"), { placeholder: "Extended Price", type: "Number", value: sAction === "Edit" ? "{invoice>ExtendedPrice}" : "" }),
+                    new Select({
+                        id: this.createId(sUniqueId + "-currencySelect"),
+                        items: {
+                            path: 'currencies>/currencies',
+                            template: new Item({
+                                key: '{currencies>key}',
+                                text: '{currencies>text}'
+                            })
+                        },
+                        selectedKey: sAction === "Edit" ? "{invoice>CurrencyCode}" : "EUR"
+                    }),
+                    // Added fields
+
+                    new Input(this.createId(sUniqueId + "-imageURLInput"), { placeholder: "Image URL", value: sAction === "Edit" ? "{invoice>ImageURL}" : "" }),
+
+                    new TextArea(this.createId(sUniqueId + "-plotSummaryInput"), { placeholder: "Plot Summary", value: sAction === "Edit" ? "{invoice>PlotSummary}" : "", rows: 5 }) // Adjust the 'rows' property as needed
+                ],
+
+
+                beginButton: new Button({
+                    text: sAction === "Add" ? "저장" : "수정",
+                    press: async () => {
+                        const oModel = oView.getModel("invoice");
+                        const oData = {
+                            ProductName: this.byId(sUniqueId + "-productNameInput").getValue(),
+                            Quantity: this.byId(sUniqueId + "-quantityInput").getValue(),
+                            ShipperName: this.byId(sUniqueId + "-shipperNameInput").getValue(),
+                            Status: this.byId(sUniqueId + "-statusSelect").getSelectedKey(),
+                            ExtendedPrice: parseFloat(this.byId(sUniqueId + "-extendedPriceInput").getValue()),
+                            CurrencyCode: this.byId(sUniqueId + "-currencySelect").getSelectedKey(),
+                            ImageURL: this.byId(sUniqueId + "-imageURLInput").getValue(), // Added field
+                            PlotSummary: this.byId(sUniqueId + "-plotSummaryInput").getValue() // Added field
+                        };
+
+                        try {
+                            if (sAction === "Add") {
+                                const oListBinding = oModel.bindList("/Invoices");
+                                const oContext = oListBinding.create(oData);
+                                await oContext.created();
+                                MessageToast.show("Invoice가 성공적으로 추가되었습니다.");
+                            } else if (sAction === "Edit") {
+                                const oBindingContext = oDialog.getBindingContext("invoice");
+                                await oBindingContext.requestObject(); // Wait until data is loaded
+                                Object.keys(oData).forEach(key => {
+                                    oBindingContext.setProperty(key, oData[key]);
+                                });
+                                await oModel.submitBatch("$auto");
+                                MessageToast.show("Invoice가 성공적으로 수정되었습니다.");
+                                await oModel.refresh();
+
+
+                            }
+
+                            oDialog.close();
+                        } catch (error) {
+                            console.error(sAction === "Add" ? "Invoice 추가에 실패했습니다." : "Invoice 수정에 실패했습니다.", error);
+                            MessageToast.show(sAction === "Add" ? "Invoice 추가에 실패했습니다." : "Invoice 수정에 실패했습니다.");
+                        }
+                    }
+                }),
+                endButton: new Button({
+                    text: "취소",
+                    press: () => {
+                        oDialog.close();
+                    }
+                })
+            });
+
+            if (sAction === "Edit" && sPath && sPath.startsWith('/')) {
+                oDialog.bindElement({
+                    path: sPath,
+                    model: "invoice",
+                    events: {
+                        dataReceived: function () {
+                            const oContext = oDialog.getBindingContext("invoice");
+                            if (oContext) {
+                                const oData = oContext.getObject();
+                                // Ensure that the dialog controls are updated with the existing data
+                                this.byId(sUniqueId + "-productNameInput").setValue(oData.ProductName || "");
+                                this.byId(sUniqueId + "-quantityInput").setValue(oData.Quantity || "");
+                                this.byId(sUniqueId + "-shipperNameInput").setValue(oData.ShipperName || "");
+                                this.byId(sUniqueId + "-statusSelect").setSelectedKey(oData.Status || "");
+                                this.byId(sUniqueId + "-extendedPriceInput").setValue(oData.ExtendedPrice || "");
+                                this.byId(sUniqueId + "-currencySelect").setSelectedKey(oData.CurrencyCode || "EUR");
+                                this.byId(sUniqueId + "-imageURLInput").setValue(oData.ImageURL || "");
+                                this.byId(sUniqueId + "-plotSummaryInput").setValue(oData.PlotSummary || "");
+                            }
+                        }.bind(this)
+                    }
+                });
+            } else if (sAction === "Add") {
+                oDialog.unbindElement();
+                oDialog.getContent().forEach(control => {
+                    if (control instanceof Input) {
+                        control.setValue("");
+                    } else if (control instanceof Select) {
+                        control.setSelectedKey("");
+                    }
+                });
+            } else {
+                console.error("잘못된 바인딩 경로:", sPath);
+            }
+
+            oView.addDependent(oDialog);
+            oDialog.open();
+            oModel.refresh();
+        },
+
+        onRatingChange: function (oEvent) {
+            const fValue = oEvent.getParameter("value");
+            const oBindingContext = this.getView().getBindingContext("invoice");
+            const oModel = this.getView().getModel("invoice");
+
+
+            console.log(oModel); // Inspect the model
+            console.log(oModel instanceof sap.ui.model.json.JSONModel ? "JSONModel" : "Not JSONModel");
+
+
+            // Log model type and details
+            console.log("Model:", oModel);
+            console.log("Model Type:", oModel.constructor.name); // Log model constructor name
+
+
+
+            if (oBindingContext) {
+                const sPath = oBindingContext.getPath();
+
+                // Handle different model types
+                if (oModel instanceof sap.ui.model.odata.v4.ODataModel) {
+                    // ODataModel v4
+                    const sEntityPath = sPath;
+
+                    // Use OData v4 model methods
+                    oModel.update(sEntityPath, { Rating: fValue }, {
+                        success: () => {
+                            MessageToast.show("Rating updated successfully.");
+                            this.byId("rating").setAverageValue(fValue);
+                        },
+                        error: () => {
+                            MessageToast.show("Failed to update rating.");
+                        }
+                    });
+                } else if (oModel instanceof sap.ui.model.odata.v2.ODataModel) {
+                    // ODataModel v2
+                    const sEntityPath = sPath;
+
+                    oModel.update(sEntityPath, { Rating: fValue }, {
+                        success: () => {
+                            MessageToast.show("Rating updated successfully.");
+                            this.byId("rating").setAverageValue(fValue);
+                        },
+                        error: () => {
+                            MessageToast.show("Failed to update rating.");
+                        }
+                    });
+                } else if (oModel instanceof sap.ui.model.json.JSONModel) {
+                    // JSONModel
+                    const sModelPath = sPath; // Ensure the correct path
+                    const oData = oModel.getProperty(sModelPath);
+
+                    oData.Rating = fValue;
+                    oModel.setProperty(sModelPath, oData);
+
+                    MessageToast.show("Rating updated successfully.");
+                } else {
+                    console.error("Unhandled model type:", oModel.constructor.name);
+                    MessageToast.show("Unhandled model type.");
+                }
+            } else {
+                MessageToast.show("No item selected to rate.");
+            }
+        }
+    });
+});

@@ -1,0 +1,107 @@
+<mvc:View
+    controllerName="ui5.walkthrough.controller.Detail"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:wt="ui5.walkthrough.control"
+    xmlns:formatter="app/Invoice/model/formatter"
+
+>
+    <Page
+        title="{i18n>detailPageTitle}"
+        showNavButton="true"
+        navButtonPress=".onNavBack"
+    >
+        <VBox>
+		  
+            <!-- 영화 포스터 -->
+            <Image
+                src="{invoice>ImageURL}"
+                class="sapUiSmallMargin"
+                width="500px" 
+                height="auto"  
+                visible="{= !!${invoice>ImageURL} }" 
+            />
+            
+            <!-- 영화 정보 패널 -->
+            <Panel
+                headerText="{invoice>ProductName}"
+                class="sapUiSmallMargin"
+            >
+                <VBox class="sapUiSmallMargin">
+                    <Text text="{i18n>shipperNameTitle}: {invoice>ShipperName}" />
+                    <Text text="{i18n>quantityTitle}: {invoice>Quantity}" />
+                     <!-- <Text 
+                      text="{ 
+                         parts: [
+                            'invoice>Status',
+                            'i18n>invoiceStatusA',
+                            'i18n>invoiceStatusB',
+                            'i18n>invoiceStatusC',
+                            'i18n>invoiceStatusD',
+                            'i18n>invoiceStatusE',
+                            'i18n>invoiceStatusF'
+                         ],
+                         formatter: '.formatter.statusText'
+                       }"
+                   /> -->
+					<Text text="{i18n>priceTitle}: {invoice>ExtendedPrice} {view>currency}" />
+
+                    <!-- <Text text="{i18n>priceTitle}: { 
+                        parts: [
+                            'invoice>ExtendedPrice',
+                            'view>/currency'
+                        ],
+                        type: 'sap.ui.model.type.Currency',
+                        formatOptions: {
+                            showMeasure: false
+                        }
+                    } {view>/currency}" /> -->
+                     <Text text="{i18n>Avage} :{invoice>AverageRating}" />
+                     <Text text="{i18n>Rating} :{invoice>Rating}" />
+                </VBox>
+            </Panel>
+
+            <!-- 줄거리 -->
+            <Panel
+                headerText="{i18n>plotSummaryTitle}"
+                class="sapUiSmallMargin"
+            >
+                <Text
+                    text="{invoice>PlotSummary}"
+                    
+                    class="sapUiSmallMargin"
+                />
+            </Panel>
+            <!-- 영화 평가 -->
+           
+            
+             <HBox alignItems="Center">
+             <wt:ProdeuctRating 
+                id="rating"
+                class="sapUiSmallMarginBeginEnd"
+                value="{invoice>Rating}" 
+                change=".onRatingChange"
+            />
+             <Text text="{rating>/value}" class="sapUiSmallMarginEnd" /> <!-- 평점 숫자 값 표시 -->
+                <Button
+                    text="{i18n>editButtonText}"
+                    icon="sap-icon://edit"
+                    press=".onEdit"
+                    type="Emphasized"
+                    class="editButton"
+                    
+                    
+                />
+                <Button
+                    text="{i18n>deleteButtonText}"
+                    icon="sap-icon://delete"
+                    press=".onDelete"
+                    type="Reject"
+                    class="deleteButton"
+                    
+                />
+            </HBox>
+            
+        </VBox>
+    </Page>
+</mvc:View>

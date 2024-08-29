@@ -1,0 +1,103 @@
+Global Styles
+html, body {
+    font-family: Arial, sans-serif !important;
+    background-color: #f0f0f0 !important;
+    margin: 0;
+    padding: 0;
+}
+
+/* Page Styles */
+sapMPage {
+    background-color: #1c1c1c !important;
+    color: #ffffff !important;
+}
+
+/* Header Toolbar */
+sapMToolbar {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+}
+
+sapMTitle {
+    font-size: 1.5em !important;
+    color: #ffcc00 !important;
+}
+
+sapMButton {
+    background-color: #444444 !important;
+    color: #ffffff !important;
+    border-radius: 5px !important;
+}
+
+sapMButton[type=Emphasized] {
+    background-color: #ffcc00 !important;
+    color: #000000 !important;
+}
+
+sapMButton[type=Reject] {
+    background-color: #ff0000 !important;
+    color: #ffffff !important;
+}
+
+/* Table Styles */
+sapMTable {
+    background-color: #2c2c2c !important;
+    color: #ffffff !important;
+}
+
+sapMColumnListItem {
+    border-bottom: 1px solid #444444 !important;
+}
+
+sapMColumn {
+    color: #ffcc00 !important;
+}
+
+sapMObjectNumber {
+    color: #ffcc00 !important;
+}
+
+sapMObjectIdentifierTitle {
+    color: #ffffff !important;
+}
+
+sapMText {
+    color: #ffffff !important;
+}
+
+/* Image Styles */
+sapMImage {
+    border: 3px solid #ffcc00 !important;
+    border-radius: 10px !important;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Panel Styles */
+sapMPanel {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+    border-radius: 5px !important;
+    margin: 10px 0 !important;
+}
+
+sapMPanelTitle {
+    color: #ffcc00 !important;
+}
+
+sapMPanel sapMText {
+    margin: 5px 0 !important;
+    color: #ffffff !important;
+}
+
+/* Custom Rating Control */
+wtProdeuctRating {
+    background-color: #444444 !important;
+    padding: 10px !important;
+    border-radius: 5px !important;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Buttons in HBox */
+sapMHBox sapMButton {
+    margin-right: 10px !important;
+}

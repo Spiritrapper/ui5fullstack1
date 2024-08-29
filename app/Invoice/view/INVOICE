@@ -1,0 +1,143 @@
+<mvc:View
+   controllerName="ui5.walkthrough.controller.InvoiceList"
+   xmlns="sap.m"
+   xmlns:mvc="sap.ui.core.mvc"
+   xmlns:core="sap.ui.core">
+   
+
+       <Table
+          id="invoiceList"
+          class="sapUiResponsiveMargin"
+          width="auto"
+          items="{
+             path : 'invoice>/Invoices',
+             sorter : {
+                path : 'ShipperName',
+                group : true
+             }
+          }"
+          selectionChange=".onSelectionChange" >
+
+          <!-- Header Toolbar with CRUD Buttons -->
+          <headerToolbar>
+             <Toolbar class="sapMToolbar">
+                <Title text="{i18n>invoiceListTitle}" class="sapMTitle"/>
+                <ToolbarSpacer/>
+                <Button
+                   text="{i18n>addButtonText}"
+                   press=".onAdd"
+                   icon="sap-icon://add"
+                   class="sapMButton"
+                />
+                <!-- <Button
+                   text="{i18n>editButtonText}"
+                   press=".onEdit"
+                   icon="sap-icon://edit"
+                   enabled="{= ${view>/selectedItem} !== null}"
+                   class="sapMButton"
+                />
+                <Button
+                   text="{i18n>deleteButtonText}"
+                   press=".onDelete"
+                   icon="sap-icon://delete"
+                   enabled="{= ${view>/selectedItem} !== null}"
+                   class="sapMButton sapMButtonReject"
+                /> -->
+                <ToolbarSpacer/>
+                   <Select
+                     id="sortSelect"
+                     change=".onSortChange"
+                     selectedKey="ShipperName"> <!-- 기본 선택된 아이템 -->
+                     <items>
+                        <core:Item key="ShipperName" text="{i18n>sortByShipperName}" />
+                        <core:Item key="ProductName" text="{i18n>sortByProductName}" />
+                        <core:Item key="ExtendedPrice" text="{i18n>sortByExtendedPrice}" />
+                     </items>
+                  </Select>
+                <SearchField 
+                   width="50%"
+                   search=".onFilterInvoices"
+                />
+             </Toolbar>
+          </headerToolbar>
+
+          <!-- Table Columns Definition -->
+          <columns>
+         
+             <Column
+                hAlign="End"
+                minScreenWidth="Small"
+                demandPopin="true"
+                width="5em">
+                <Text text="{i18n>columnQuantity}" />
+             </Column>
+             <Column>
+                <Text text="{i18n>columnName}" />
+             </Column>
+             <Column
+                minScreenWidth="Small"
+                demandPopin="true">
+                <Text text="{i18n>columnStatus}" />
+             </Column>
+             <Column
+                minScreenWidth="Tablet"
+                demandPopin="false">
+                <Text text="{i18n>columnSupplier}" />
+             </Column>
+             <Column hAlign="End">
+                <Text text="{i18n>columnPrice}" />
+             </Column>
+
+          </columns>
+
+          <!-- Table Items Definition -->
+          <items>
+             <ColumnListItem 
+                type="Active"
+                press=".onPress"
+             >
+                <cells>
+
+                   <ObjectIdentifier 
+                      title="{invoice>Quantity}"
+                      
+                   />
+                   <ObjectIdentifier title="{invoice>ProductName}"/>
+                   <Text 
+                      text="{ 
+                         parts: [
+                            'invoice>Status',
+                            'i18n>invoiceStatusA',
+                            'i18n>invoiceStatusB',
+                            'i18n>invoiceStatusC',
+                            'i18n>invoiceStatusD',
+                            'i18n>invoiceStatusE',
+                            'i18n>invoiceStatusF'
+                         ],
+                         formatter: '.formatter.statusText'
+                       }"
+                   />
+                   <Text text="{invoice>ShipperName}"/>
+                   <ObjectNumber
+                      number="{ 
+                         parts: [
+                            'invoice>ExtendedPrice',
+                            'view>/currency'
+                         ],
+                         type: 'sap.ui.model.type.Currency',
+                         formatOptions: {
+                            showMeasure: false
+                         }
+                       }"
+                       unit="{view>/currency}"
+                       state="{= ${invoice>ExtendedPrice} > 50 ? 'Error' : 'Success'}"
+                       class="price"
+                   />
+
+                </cells>
+             </ColumnListItem>
+          </items>
+
+       </Table>
+
+</mvc:View>

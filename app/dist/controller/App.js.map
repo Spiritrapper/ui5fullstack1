@@ -1,0 +1,1 @@
+{"version":3,"file":"App.js","names":["sap","ui","define","Controller","UIComponent","Fragment","extend","onInit","oRouter","getRouterFor","this","initialize"],"sources":["App-dbg.js"],"mappings":"AAAAA,IAAIC,GAAGC,OAAO,CACV,6BACA,0BACA,wBACD,SAAUC,EAAYC,EAAaC,GAClC,aAEA,OAAOF,EAAWG,OAAO,yBAA0B,CAC/CC,OAAQ,WACJ,IAAIC,EAAUJ,EAAYK,aAAaC,MACvCF,EAAQG,YACZ,GAER","ignoreList":[]}

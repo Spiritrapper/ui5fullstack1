@@ -1,0 +1,26 @@
+<mvc:View
+    controllerName="ui5.walkthrough.controller.Home"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc">
+    <Page title="{i18n>homePageTitle}"
+    class="homeBackground"
+    titleAlignment="Center" >
+        <content>
+            <!-- 중앙 정렬을 위해 VBox 사용 -->
+            <VBox
+                justifyContent="Center"
+                alignItems="Center"
+                height="100%">
+                <Image
+                    
+                    src="https://www.svgrepo.com/show/34896/movie.svg"
+                    alt="Logo"
+                    press="onNavigateToInvoices"
+                    class="homeLogo"
+                />
+
+
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

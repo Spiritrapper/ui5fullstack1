@@ -1,0 +1,27 @@
+{
+  "welcomeFile": "/index.html",
+  "authenticationMethod": "none",
+  "routes": [
+    {
+      "source": "^/themes/(.*)$",
+      "target": "$1",
+      "service": "com.sap.ui.theming",
+      "endpoint": "runtime"
+  },
+    {
+      "source": "^/app/(.*)$",
+      "target": "$1",
+      "localDir": ".",
+      "cacheControl": "no-cache, no-store, must-revalidate",
+      "csrf": false,
+      "authenticationType": "xsuaa"
+     }
+    
+  ],
+  "cors": {
+    "allowedOrigins": ["https://port4005-workspaces-ws-z7sjw.us10.trial.applicationstudio.cloud.sap"],
+    "allowedMethods": ["GET", "POST", "PUT", "DELETE"],
+    "allowedHeaders": ["Authorization", "Content-Type", "X-Requested-With"],
+    "maxAge": 3600
+  }
+}

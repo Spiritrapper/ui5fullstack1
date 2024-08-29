@@ -1,0 +1,72 @@
+/* 전체 페이지 배경색 변경 */
+.sapMApp {
+    background-color: #f0f8ff; /* 연한 파란색 배경 */
+}
+
+/* 헤더 스타일 변경 */
+.sapMBar {
+    background-color: #1a237e; /* 진한 파란색 */
+    color: white;
+}
+
+/* 테이블 헤더 강조 */
+.sapMListTbl th {
+    background-color: #3f51b5; /* 중간 톤의 파란색 */
+    color: white;
+    font-weight: bold;
+}
+
+/* 관리자 전용 버튼 스타일 */
+.adminButton {
+    background-color: #ff4081; /* 분홍색 */
+    color: white;
+    font-weight: bold;
+}
+
+.adminButton:hover {
+    background-color: #f50057; /* 더 진한 분홍색 */
+}
+
+/* 테이블 행 호버 효과 */
+.sapMListTbl tr:hover {
+    background-color: #e8eaf6; /* 연한 파란색 */
+}
+
+/* 페이지네이션 버튼 스타일 */
+.sapMBtn.paginationButton {
+    background-color: #3f51b5;
+    color: white;
+}
+
+/* 검색 필드 스타일 */
+.sapMSF {
+    border: 2px solid #3f51b5;
+    border-radius: 5px;
+}
+
+/* 선택된 항목 강조 */
+.sapMLIB.sapMLIBSelected {
+    background-color: #c5cae9; /* 연한 파란색 */
+    border-left: 5px solid #3f51b5;
+}
+
+/* 관리자 모드 토글 스위치 */
+.adminModeSwitch .sapMSwt {
+    background-color: #ff4081;
+}
+
+.adminModeSwitch .sapMSwtOn {
+    background-color: #4caf50; /* 초록색 */
+}
+
+/* 에러 메시지 스타일 */
+.errorMessage {
+    color: #f44336; /* 빨간색 */
+    font-weight: bold;
+}
+
+/* 성공 메시지 스타일 */
+.successMessage {
+    color: #4caf50; /* 초록색 */
+    font-weight: bold;
+}

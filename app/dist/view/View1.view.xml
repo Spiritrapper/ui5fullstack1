@@ -1,0 +1,35 @@
+<mvc:View
+	controllerName="odatacrud.controller.View1"
+	displayBlock="true"
+	height="100%"
+	xmlns="sap.m"
+	xmlns:f="sap.f"
+	xmlns:mvc="sap.ui.core.mvc">
+	<Page id="page" title="{i18n>title}">
+    <Table id="idProducts" items="{/results}">
+    <columns>
+    <Column >
+    <Text text="ID"/>
+    </Column>
+    <Column >
+    <Text text="Name"/>
+    </Column>
+    <Column >
+    <Text text="Price"/>
+    </Column>
+    <Column >
+    <Text text="Rating"/>
+    </Column>
+    </columns>
+    <items>
+    <ColumnListItem >
+        <cells>
+            <Text text="{ID}" />       
+            <Text text="{Name}" />       
+                
+        </cells>
+    </ColumnListItem>
+    </items>
+    </Table>
+    </Page>
+</mvc:View>
