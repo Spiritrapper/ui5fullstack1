@@ -1,109 +1,134 @@
 {
     "_version": "1.58.0",
     "sap.app": {
-        "id": "ui5.walkthrough",
-        "i18n": "i18n/i18n.properties",
-        "title": "{{appTitle}}",
-        "description": "{{appDescription}}",
-        "type": "application",
-        "applicationVersion": {
-            "version": "1.0.0"
+      "id": "ui5.walkthrough",
+      "i18n": "i18n/i18n.properties",
+      "title": "{{appTitle}}",
+      "description": "{{appDescription}}",
+      "type": "application",
+      "applicationVersion": {
+        "version": "1.0.0"
+      },
+      "dataSources": {
+        "mainService": {
+          "uri": "/odata/v4/request/Request/",
+          "type": "OData",
+          "settings": {
+            "odataVersion": "4.0"
+          }
+        },
+        "viewData": {
+          "uri": "RequestOrder.json",
+          "type": "JSON"
         }
+      }
     },
     "sap.ui": {
-        "technology": "UI5",
-        "deviceTypes": {
-            "desktop": true,
-            "tablet": true,
-            "phone": true
-        }
+      "technology": "UI5",
+      "deviceTypes": {
+        "desktop": true,
+        "tablet": true,
+        "phone": true
+      }
     },
     "sap.ui5": {
-        "dependencies": {
-            "minUI5Version": "1.108.0",
-            "libs": {
-                "sap.ui.core": {},
-                "sap.m": {}
-            }
-        },
-        "models": {
-            "i18n": {
-                "type": "sap.ui.model.resource.ResourceModel",
-                "settings": {
-                    "bundleName": "ui5.walkthrough.i18n.i18n",
-                    "supportedLocales": [
-                        "",
-                        "en"
-                    ],
-                    "fallbackLocale": "en"
-                }
-            },
-            "view": {
-                "type": "sap.ui.model.json.JSONModel",
-                "dataSource": "viewData"
-            }
-        },
-        "rootView": {
-            "viewName": "ui5.walkthrough.view.App",
-            "type": "XML",
-            "id": "app"
-        },
-        "resources": {
-            "css": [
-                {
-                    "uri": "themes/myTheme/adminMode.css"
-                }
-            ]
-        },
-        "routing": {
-            "config": {
-                "routerClass": "sap.m.routing.Router",
-                "type": "View",
-                "viewType": "XML",
-                "path": "ui5.walkthrough.view",
-                "controlId": "app",
-                "controlAggregation": "pages"
-            },
-            "routes": [
-                {
-                    "pattern": "",
-                    "name": "home",
-                    "target": "home"
-                },
-                {
-                    "pattern": "overview",
-                    "name": "overview",
-                    "target": "overview"
-                },
-                {
-                    "pattern": "detail/{requestNumber}",
-                    "name": "detail",
-                    "target": "detail"
-                }
-            ],
-            "targets": {
-                "home": {
-                    "viewName": "Home",
-                    "viewLevel": 1,
-                    "controlAggregation": "pages"
-                },
-                "overview": {
-                    "id": "overview",
-                    "viewLevel": 2,
-                    "name": "RequestList",
-                    "controlAggregation": "pages"
-                },
-                "detail": {
-                    "id": "detail",
-                    "viewLevel": 3,
-                    "name": "RequestDetail",
-                    "controlAggregation": "pages"
-                }
-            }
-        },
-        "contentDensities": {
-            "compact": true,
-            "cozy": true
+      "dependencies": {
+        "minUI5Version": "1.108.0",
+        "libs": {
+          "sap.ui.core": {},
+          "sap.m": {}
         }
+      },
+      "models": {
+        "i18n": {
+          "type": "sap.ui.model.resource.ResourceModel",
+          "settings": {
+            "bundleName": "ui5.walkthrough.i18n.i18n",
+            "supportedLocales": ["", "en"],
+            "fallbackLocale": "en"
+          }
+        },
+        "": {  
+          "dataSource": "mainService",
+          "settings": {
+            "synchronizationMode": "None",
+            "operationMode": "Server",
+            "autoExpandSelect": true,
+            "earlyRequests": true
+          }
+        },
+        "view": {
+          "type": "sap.ui.model.json.JSONModel",
+          "dataSource": "viewData"
+        }
+      },
+      "rootView": {
+        "viewName": "ui5.walkthrough.view.App",
+        "type": "XML",
+        "id": "app"
+      },
+      "resources": {
+        "css": [
+          {
+            "uri": "themes/myTheme/adminMode.css"
+          }
+        ]
+      },
+      "routing": {
+        "config": {
+          "routerClass": "sap.m.routing.Router",
+          "type": "View",
+          "viewType": "XML",
+          "async": true,
+          "viewPath": "ui5.walkthrough.view",
+          "controlId": "app",
+          "controlAggregation": "pages",
+          "clearControlAggregation": false
+        },
+        "routes": [
+          {
+            "pattern": "",
+            "name": "home",
+            "target": "home"
+          },
+          {
+            "pattern": "overview",
+            "name": "overview",
+            "target": "overview"
+          },
+          {
+            "pattern": "detail/{ReqNum}",
+            "name": "detail",
+            "target": "detail"
+          }
+        ],
+        "targets": {
+          "home": {
+            "viewType": "XML",
+            "viewName": "Home",
+            "viewLevel": 1,
+            "controlAggregation": "pages"
+          },
+          "overview": {
+            "viewType": "XML",
+            "id": "overview",
+            "viewLevel": 2,
+            "viewName": "Request",
+            "controlAggregation": "pages"
+          },
+          "detail": {
+            "viewType": "XML",
+            "id": "detail",
+            "viewLevel": 3,
+            "viewName": "CreateOrder",
+            "controlAggregation": "pages"
+          }
+        }
+      },
+      "contentDensities": {
+        "compact": true,
+        "cozy": true
+      }
     }
-}
+  }
+  

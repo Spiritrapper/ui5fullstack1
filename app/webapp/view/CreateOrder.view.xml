@@ -1,0 +1,154 @@
+<mvc:View
+    controllerName="ui5.walkthrough.controller.CreateOrder"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:layout="sap.ui.layout"
+    xmlns:core="sap.ui.core"
+>
+    <f:DynamicPage
+        id="page"
+        headerExpanded="false"
+        showFooter="true"
+        toggleHeaderOnTitleClick="true"
+    >
+        <f:title>
+            <f:DynamicPageTitle>
+                <f:heading>
+                    <HBox>
+                        <Title text="CreateOrder" />
+                    </HBox>
+                </f:heading>
+            </f:DynamicPageTitle>
+        </f:title>
+
+        <f:content>
+            <form:SimpleForm layout="ResponsiveGridLayout">
+                <form:content>
+                    <VBox>
+                        <Label text="Request Number" />
+                        <Text
+                            id="ReqNum"
+                            text="{detailModel>/request_number}"
+                        />
+                        <layoutData>
+                            <layout:GridData span="XL6 L6 M3 S12" />
+                        </layoutData>
+                    </VBox>
+
+                    <VBox>
+                        <Label text="Product" />
+                        <Input
+                            id="ReqProduct"
+                            value="{detailModel>/request_product}"
+                        />
+                        <layoutData>
+                            <layout:GridData span="XL6 L6 M3 S12" />
+                        </layoutData>
+                    </VBox>
+
+                    <VBox>
+                        <Label text="Quantity" />
+                        <Input
+                            id="ReqQuantity"
+                            type="Number"
+                            value="{detailModel>/request_quantity}"
+                        />
+                        <layoutData>
+                            <layout:GridData span="XL6 L6 M3 S12" />
+                        </layoutData>
+                    </VBox>
+
+                    <VBox>
+                        <Label text="Requestor" />
+                        <Input
+                            id="ReqRequestor"
+                            value="{detailModel>/requestor}"
+                        />
+                        <layoutData>
+                            <layout:GridData span="XL6 L6 M3 S12" />
+                        </layoutData>
+                    </VBox>
+
+                    <VBox>
+                        <Label text="Request Date" />
+                        <DatePicker
+                            id="ReqDate"
+                            value="{detailModel>/request_date}"
+                        />
+                        <layoutData>
+                            <layout:GridData span="XL6 L6 M3 S12" />
+                        </layoutData>
+                    </VBox>
+
+                    <VBox>
+                        <Label text="State" />
+                        <Select
+                            id="ReqState"
+                            selectedKey="{detailModel>/request_state/request_state_key}"
+                            items="{request>/Request_state}"
+                        >
+                            <core:Item
+                                key="{request>request_state_key}"
+                                text="{request>request_state_kor}"
+                            />
+                        </Select>
+                        <layoutData>
+                            <layout:GridData span="XL6 L6 M3 S12" />
+                        </layoutData>
+                    </VBox>
+
+                    <VBox>
+                        <Label text="Reason" />
+                        <Input
+                            id="ReqReason"
+                            value="{detailModel>/request_reason}"
+                        />
+                        <layoutData>
+                            <layout:GridData span="XL6 L6 M3 S12" />
+                        </layoutData>
+                    </VBox>
+
+                    <VBox>
+                        <Label text="Estimated Price" />
+                        <Input
+                            id="ReqEstimatedPrice"
+                            type="Number"
+                            value="{detailModel>/request_estimated_price}"
+                        />
+                        <layoutData>
+                            <layout:GridData span="XL6 L6 M3 S12" />
+                        </layoutData>
+                    </VBox>
+
+                    <VBox>
+                        <Label text="Reject Reason" />
+                        <Input
+                            id="ReqRejectReason"
+                            value="{detailModel>/request_reject_reason}"
+                        />
+                        <layoutData>
+                            <layout:GridData span="XL6 L6 M3 S12" />
+                        </layoutData>
+                    </VBox>
+                </form:content>
+            </form:SimpleForm>
+        </f:content>
+
+        <f:footer>
+            <OverflowToolbar>
+                <ToolbarSpacer />
+                <Button
+                    type="Emphasized"
+                    text="생성"
+                />
+                <Button
+                    type="Default"
+                    text="취소"
+                    press="onBack"
+                />
+            </OverflowToolbar>
+        </f:footer>
+    </f:DynamicPage>
+</mvc:View>

@@ -1,39 +1,132 @@
 <mvc:View
-    controllerName="ui5.walkthrough.controller.RequestList"
-    xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-    <Page title="Request List">
-        <content>
-            <List
-                id="requestList"
-                items="{request>/Request}"
-                growing="true"
-                growingThreshold="20"
-                busyIndicatorDelay="0"
-                mode="Delete"
-                delete="onDelete"
-                selectionChange="onListItemPress"
-                
-                > 
-                <items>
-                    <StandardListItem
-                        title="{request>request_number}"
-                        description="{request>request_product}"
-                        type="Navigation"
-                        press="onListItemPress" />
-                </items>
-            </List>
-        </content>
-        <footer>
+   controllerName="ui5.walkthrough.controller.RequestList"
+   xmlns="sap.m"
+   xmlns:mvc="sap.ui.core.mvc"
+   xmlns:core="sap.ui.core"
+   xmlns:formatter="ui5.walkthrough.model.formatter">
+   
+   <VBox>
+   
+      <Table
+         id="requestList"
+         class="sapUiResponsiveMargin"
+         width="auto"
+         items="{ 
+            path : 'request>/Requests',
+            sorter : {
+               path : 'request_state/request_state_kor',
+               group : true
+            }
+         }"
+         selectionChange=".onSelectionChange">
+         
+         <headerToolbar>
             <Toolbar>
-                <ToolbarSpacer/>
-                <Button
-                    icon="sap-icon://refresh"
-                    press="onRefresh"
-                    tooltip="Refresh List" />
-                    <ToolbarSpacer/>
-                    <Button text="Delete" press=".onDelete"/> 
+               <ToolbarSpacer/>
+               <Button text="Create" press=".onCreate"/>
+               <ToolbarSpacer/>
+               <Button text="Delete" press=".onDelete"/>
+               <ToolbarSpacer/>
+               <Switch 
+                  state="{view>/isAdminMode}"
+                  change=".onAdminModeChange"
+                  customTextOn="관리자"
+                  customTextOff="일반"/>
+               <ToolbarSpacer/>
+               <Title text="{i18n>requestListTitle}"/>
+               <ToolbarSpacer/>
+               <Select
+                  id="sortSelect"
+                  change=".onSortChange"
+                  selectedKey="request_estimated_price">
+                  <items>
+                     <core:Item key="requestor" text="{i18n>sortByRequestor}" />
+                     <core:Item key="request_product" text="{i18n>sortByrequest_product}" />
+                     <core:Item key="request_quantity" text="{i18n>sortByrequest_quantity}" />
+                     <core:Item key="request_state" text="{i18n>sortByrequest_state}" />
+                     <core:Item key="request_estimated_price" text="{i18n>sortByrequest_estimated_price}"/>
+                     <core:Item key="request_estimated_price" text="{i18n>sortByDate}"/>
+                  </items>
+               </Select>
+               
+               <SearchField 
+                  width="50%"
+                  search=".onFilterRequests"
+                  liveChange=".onLiveSearch"/>
             </Toolbar>
-        </footer>
-    </Page>
+         </headerToolbar>
+         
+         <columns>
+            <Column
+               hAlign="End"
+               minScreenWidth="Small"
+               demandPopin="true"
+               width="5em">
+               <Text text="{i18n>columnQuantity}" />
+            </Column>
+            <Column>
+               <Text text="{i18n>columnProduct}" />
+            </Column>
+            <Column
+               minScreenWidth="Small"
+               demandPopin="true">
+               <Text text="{i18n>columnStatus}" />
+            </Column>
+            <Column
+               minScreenWidth="Tablet"
+               demandPopin="true">
+               <Text text="{i18n>columnRequestor}" />
+            </Column>
+            <Column hAlign="End">
+               <Text text="{i18n>columnPrice}" />
+            </Column>
+            <Column hAlign="End">
+               <Text text="{i18n>columnDate}" />
+            </Column>
+         </columns>
+         
+         <items>
+            <ColumnListItem 
+               type="Navigation"
+               press=".onPress">
+               <cells>
+                  <ObjectNumber 
+                     number="{request>request_quantity}"
+                     emphasized="false" />
+                  <ObjectIdentifier title="{request>request_product}"/>
+                  <Text 
+                     text="{ 
+                        path: 'request>request_state/request_state_kor',
+                        formatter: '.formatter.statusText'
+                     }"
+                  />
+                  <Text text="{request>requestor}"/>
+                  <ObjectNumber
+                     number="{ 
+                        parts: [
+                           'request>request_estimated_price',
+                           'view>/currency'
+                        ],
+                        type: 'sap.ui.model.type.Currency',
+                        formatOptions: {
+                           showMeasure: false
+                        }
+                     }"
+                     unit="{view>/currency}"
+                     state="{= ${request>request_estimated_price} > 50 ? 'Error' : 'Success'}"/>
+                  <Text text="{request>request_date}"/>
+               </cells>
+            </ColumnListItem>
+         </items>
+         
+      </Table>
+      
+      <HBox justifyContent="SpaceBetween">
+         <Button text="이전" press=".onPreviousPage" enabled="{= ${view>/currentPage} > 0 }" />
+         <Text text="페이지 {= ${view>/currentPage} + 1 }" />
+         <Button text="다음" press=".onNextPage" enabled="{view>/hasMore}" />
+      </HBox>
+      
+   </VBox>
+   
 </mvc:View>

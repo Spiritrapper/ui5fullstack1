@@ -1,19 +1,20 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/json/JSONModel",
-    "sap/m/MessageToast",
     "../model/formatter",
+    "sap/m/MessageToast",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator"
-], function (Controller, JSONModel, MessageToast, Filter, FilterOperator) {
+], function (Controller, JSONModel, formatter,MessageToast, Filter, FilterOperator) {
     "use strict";
 
     return Controller.extend("ui5.walkthrough.controller.Request", {
 
-        
+        formatter: formatter,
 
         onInit: function () {
-            this.sServiceUrl = "https://port4005-workspaces-ws-z7sjw.us10.trial.applicationstudio.cloud.sap/odata/v4/request/Request";
+            
+            this.sServiceUrl = "/odata/v4/request/Request";
             this._oModel = new JSONModel();
             this.getView().setModel(this._oModel, "request");
             
@@ -49,9 +50,29 @@ sap.ui.define([
             //RequestList 컨트롤러에서 라우팅 이벤트 처리:
             // RequestList 컨트롤러에서 라우팅 이벤트를 처리하여 화면에 진입할 때마다 데이터를 새로 로드합니다:
             var oRouter = this.getOwnerComponent().getRouter();
-            oRouter.getRoute("overview").attachPatternMatched(this._onObjectMatched, this);
+            oRouter.getRoute("Request").attachPatternMatched(this._onObjectMatched, this);
 
         },
+
+        onNavToB: function (oEvent) { 
+            let SelectedNum = "1000000001";
+            this.getOwnerComponent().getRouter().navTo("CreateOrder", { num: SelectedNum });
+        },
+
+        onConfirmSortDialog: function (oEvent) { 
+            let mParams = oEvent.getParameters();
+            let sPath = mParams.sortItem.getKey();
+            let bDescending = mParams.sortDescending;
+            let aSorters = [];
+            aSorters.push(new Sorter(sPath, bDescending));
+            let oBinding = this.byId("RequestTable").getBinding("rows");
+            oBinding.sort(aSorters);
+            },
+
+        onCreateOrder : function () { 
+            this.getOwnerComponent().getRouter().navTo("CreateOrder");
+        },
+            
 
         _loadRequestStates: function () {
             $.ajax({
@@ -75,21 +96,7 @@ sap.ui.define([
             this._loadData(); // 데이터 새로 로드
         },
 
-        onAdminModeChange: function (oEvent) {
-            var bIsAdminMode = oEvent.getParameter("state");
-            this.getView().getModel("view").setProperty("/isAdminMode", bIsAdminMode);
 
-            // You can add additional logic here, like showing a confirmation dialog
-            if (bIsAdminMode) {
-                // Maybe ask for admin password
-                this._showAdminConfirmationDialog();
-            }
-        },
-
-        _showAdminConfirmationDialog: function () {
-            // Implement a dialog to confirm admin access
-            // This is just a placeholder for where you might add security measures
-        },
 
 
 
@@ -115,7 +122,7 @@ sap.ui.define([
                 },
                 success: (oData) => {
                     console.log("Received Data:", oData);
-                    const oTable = this.byId("requestList");
+                    const oTable = this.byId("Request");
                     if (!oTable) {
                         console.error("Table not found.");
                         return;
@@ -203,6 +210,28 @@ sap.ui.define([
             }
         },
 
+        onSearch: function () { let ReqNum = this.byId("ReqNum").getValue();
+            let ReqGood = this.byId("ReqGood").getValue();
+            let Requester = this.byId("Requester").getValue();
+            let ReqDate = this.byId("ReqDate").getValue();
+            let ReqStatus = this.byId("ReqStatus").getSelectedKey();
+            if (ReqDate) { let ReqYear = ReqDate.split(". ")[0];
+            let ReqMonth = ReqDate.split(". ")[1].padStart(2, '0');
+            ReqDate = ReqYear + "-" + ReqMonth;
+            }
+            var aFilter = [];
+            if (ReqNum) { aFilter.push(new Filter("request_number", FilterOperator.Contains, ReqNum)) } 
+            if (ReqGood) { aFilter.push(new Filter("request_product", FilterOperator.Contains, ReqGood)) } 
+            if (Requester) { aFilter.push(new Filter("requestor", FilterOperator.Contains, Requester)) } 
+            if (ReqDate) { aFilter.push(new Filter("request_date", FilterOperator.Contains, ReqDate)) } 
+            if (ReqStatus) { aFilter.push(new Filter("request_state", FilterOperator.Contains, ReqStatus)) }
+            let oTable = this.byId("RequestTable").getBinding("rows");
+            oTable.filter(aFilter);
+            },
+
+
+            
+
         onResetFilter: function () {
             // 필터 쿼리 초기화
             this._currentFilterQuery = "";
@@ -238,7 +267,7 @@ sap.ui.define([
         },
 
         onCreate: function () {
-            if (!this.getView().getModel("view").getProperty("/isAdminMode")) {
+            if (!this.getView().getModel("view").getProperty("request")) {
                 // Show message or handle unauthorized access
                 return;
             }
@@ -249,7 +278,7 @@ sap.ui.define([
                 requestor: "2",
                 request_date: "2024-08-24", // Provide a valid date in YYYY-MM-DD format
                 request_state_request_state_key: "NEW",
-                request_reason: 2,
+                request_reason:"2",
                 request_estimated_price: "2",
                 request_reject_reason: "2"
             };
@@ -263,7 +292,6 @@ sap.ui.define([
                 data: JSON.stringify(data),
                 contentType: 'application/json',
                 success: (result) => {
-                    debugger;
                     console.log("Create successful", result);
                     this._loadData(); // Refresh data after creation
                 },
@@ -298,6 +326,8 @@ sap.ui.define([
         // },
 
         _navigateToDetail: function (oItem) {
+
+            console.log("onPress에서 넘어온 oItem",oItem);
             const oBindingContext = oItem.getBindingContext("request");
             if (oBindingContext) {
                 const oData = oBindingContext.getObject();
@@ -318,17 +348,50 @@ sap.ui.define([
             }
         },
 
+        // 단일 선택시
+        // _selectItem: function (oItem) {
+        //     if (oItem) {
+        //         const oBindingContext = oItem.getBindingContext("request");
+        //         if (oBindingContext) {
+        //             const sPath = oBindingContext.getPath();
+        //             const oModel = this.getView().getModel("request");
+        //             oModel.setProperty("/selectedItem", sPath);
+        //             console.log("Selected item path set in model:", sPath);
+
+        //             // Optionally, you can visually indicate the selection
+        //             oItem.setSelected(true);
+        //         }
+        //     }
+        // },
+
+
+        // 복수 선택시
         _selectItem: function (oItem) {
             if (oItem) {
                 const oBindingContext = oItem.getBindingContext("request");
                 if (oBindingContext) {
                     const sPath = oBindingContext.getPath();
                     const oModel = this.getView().getModel("request");
-                    oModel.setProperty("/selectedItem", sPath);
-                    console.log("Selected item path set in model:", sPath);
-
-                    // Optionㄱㄷㅋally, you can visually indicate the selection
-                    oItem.setSelected(true);
+        
+                    // Get current selected items from the model
+                    let aSelectedItems = oModel.getProperty("/selectedItems") || [];
+        
+                    // Check if the item is already selected
+                    const iIndex = aSelectedItems.indexOf(sPath);
+                    if (iIndex === -1) {
+                        // Add the selected item path to the array if not already selected
+                        aSelectedItems.push(sPath);
+                    } else {
+                        // Remove the selected item path from the array if it's already selected
+                        aSelectedItems.splice(iIndex, 1);
+                    }
+        
+                    // Update the model with the selected items
+                    oModel.setProperty("/selectedItems", aSelectedItems);
+                    console.log("Updated selected items in model:", aSelectedItems);
+        
+                    // Optionally, visually indicate the selection
+                    oItem.setSelected(!oItem.getSelected());
                 }
             }
         },
@@ -336,33 +399,14 @@ sap.ui.define([
         onPress: function (oEvent) {
 
             const oItem = oEvent.getSource();
-
-            var bIsAdminMode = this.getView().getModel("view").getProperty("/isAdminMode");
-            var oRouter = this.getOwnerComponent().getRouter();
-
-
-            if (bIsAdminMode) {
-                // Navigate to edit page
-                oRouter.navTo("edit", {
-                    requestPath: window.encodeURIComponent(oItem.getBindingContext("request").getPath().substr(1))
-                });
-            } else {
-                // Navigate to detail page (read-only)
-                oRouter.navTo("detail", {
-                    requestPath: window.encodeURIComponent(oItem.getBindingContext("request").getPath().substr(1))
-                });
-            }
-
-            // // // `Detail` 페이지로 이동
-            // oRouter.navTo("detail", {
-            //     requestPath: window.encodeURIComponent(oItem.getBindingContext("request").getPath().substr(1))
-            // });
-
+            console.log("oitem 비워있는건가?",oItem);
+       
+           
             if (this._clickTimer) {
                 clearTimeout(this._clickTimer);
                 this._clickTimer = null;
                 this._navigateToDetail(oItem);
-                bIsAdminMode: bIsAdminMode
+                
             } else {
                 this._clickTimer = setTimeout(() => {
                     this._clickTimer = null;
@@ -373,21 +417,40 @@ sap.ui.define([
 
         },
 
+        // 단일시
+        // onSelectionChange: function (oEvent) {
+        //     var oSelectedItem = oEvent.getParameter("listItem");
+        //     if (oSelectedItem) {
+        //         var sPath = oSelectedItem.getBindingContext("request").getPath();
+        //         this.getView().getModel("request").setProperty("/selectedItem", sPath);
+        //         console.log("선택된 항목 경로가 모델에 설정됨:", sPath);
+        //     }
+        // },
+
+        // 복수 선택시
         onSelectionChange: function (oEvent) {
-            var oSelectedItem = oEvent.getParameter("listItem");
+            const oSelectedItem = oEvent.getParameter("listItem");
             if (oSelectedItem) {
-                var sPath = oSelectedItem.getBindingContext("request").getPath();
-                this.getView().getModel("request").setProperty("/selectedItem", sPath);
-                console.log("선택된 항목 경로가 모델에 설정됨:", sPath);
+                const sPath = oSelectedItem.getBindingContext("request").getPath();
+                const oModel = this.getView().getModel("request");
+        
+                let aSelectedItems = oModel.getProperty("/selectedItems") || [];
+                const iIndex = aSelectedItems.indexOf(sPath);
+                if (iIndex === -1) {
+                    aSelectedItems.push(sPath);
+                } else {
+                    aSelectedItems.splice(iIndex, 1);
+                }
+        
+                oModel.setProperty("/selectedItems", aSelectedItems);
+                console.log("Updated selected items in model on selection change:", aSelectedItems);
             }
         },
+        
 
-        // 삭제 함수 수정
+        // 단일 삭제 함수 수정
         onDelete: function () {
-            if (!this.getView().getModel("view").getProperty("/isAdminMode")) {
-                // Show message or handle unauthorized access
-                return;
-            }
+            
             var oModel = this.getView().getModel("request");
             var sSelectedPath = oModel.getProperty("/selectedItem");
 
@@ -414,6 +477,47 @@ sap.ui.define([
             } else {
                 console.error("삭제할 항목이 선택되지 않았습니다.");
                 MessageToast.show("삭제할 항목을 선택해주세요.");
+            }
+        },
+
+        // 복수 삭제
+        onDelete: function () {
+            var oModel = this.getView().getModel("request");
+            var aSelectedPaths = oModel.getProperty("/selectedItems"); // 다중 선택된 항목들의 경로 배열
+        
+            if (aSelectedPaths && aSelectedPaths.length > 0) {
+                var aRequestsToDelete = [];
+        
+                aSelectedPaths.forEach(sPath => {
+                    var sRequestNumber = oModel.getProperty(sPath).request_number;
+                    aRequestsToDelete.push(sRequestNumber);
+                });
+        
+                console.log("삭제할 요청 번호들:", aRequestsToDelete);
+        
+                var deleteCount = 0;
+                aRequestsToDelete.forEach(sRequestNumber => {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: `${this.sServiceUrl}/${sRequestNumber}`,
+                        success: (result) => {
+                            deleteCount++;
+                            if (deleteCount === aRequestsToDelete.length) {
+                                console.log("모든 항목 삭제 성공", result);
+                                this._loadData(); // 삭제 후 데이터 새로고침
+                                oModel.setProperty("/selectedItems", []); // 삭제 후 선택 초기화
+                                MessageToast.show("선택된 항목들이 삭제되었습니다.");
+                            }
+                        },
+                        error: (xhr, status, error) => {
+                            console.error("데이터 삭제 실패", error);
+                            MessageToast.show("삭제 중 오류가 발생했습니다.");
+                        }
+                    });
+                });
+            } else {
+                console.error("삭제할 항목이 선택되지 않았습니다.");
+                MessageToast.show("삭제할 항목들을 선택해주세요.");
             }
         },
 

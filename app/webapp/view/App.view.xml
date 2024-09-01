@@ -1,14 +1,33 @@
 <mvc:View
-   controllerName="ui5.walkthrough.controller.App"
-   xmlns="sap.m"
-   xmlns:mvc="sap.ui.core.mvc"
-   displayBlock="true">
-   <Shell>
-    <App 
-        class="myAppDemoWT"
-        id="app"
-        />
-
-   </Shell>
-   
+    controllerName="ui5.walkthrough.controller.App"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:tnt="sap.tnt"
+>
+    <tnt:ToolPage id="toolPage">
+        <tnt:header >
+            <tnt:ToolHeader>
+            <Image src="image/logo.svg" class="sapUiSmallMargin" height="30px" />
+                <MenuButton
+                    enabled="true"
+                    text="물품 요청"
+                >
+                    <menu>
+                        <Menu>
+                            <MenuItem text="물품 요청 목록" />
+                            <MenuItem text="물품 요청 현황" />
+                        </Menu>
+                    </menu>
+                </MenuButton>
+            </tnt:ToolHeader>
+        </tnt:header>
+        <tnt:mainContents>
+            <App
+                class="myAppDemoWT"
+                id="app"
+            >
+            <mvc:XMLView viewName="ui5.walkthrough.view.Request"/> 
+            </App>
+        </tnt:mainContents>
+    </tnt:ToolPage>
 </mvc:View>

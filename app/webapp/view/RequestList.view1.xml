@@ -1,0 +1,39 @@
+<mvc:View
+    controllerName="ui5.walkthrough.controller.RequestList"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page title="Request List">
+        <content>
+            <List
+                id="requestList"
+                items="{request>/Request}"
+                growing="true"
+                growingThreshold="20"
+                busyIndicatorDelay="0"
+                mode="Delete"
+                delete="onDelete"
+                selectionChange="onListItemPress"
+                
+                > 
+                <items>
+                    <StandardListItem
+                        title="{request>request_number}"
+                        description="{request>request_product}"
+                        type="Navigation"
+                        press="onListItemPress" />
+                </items>
+            </List>
+        </content>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Button
+                    icon="sap-icon://refresh"
+                    press="onRefresh"
+                    tooltip="Refresh List" />
+                    <ToolbarSpacer/>
+                    <Button text="Delete" press=".onDelete"/> 
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

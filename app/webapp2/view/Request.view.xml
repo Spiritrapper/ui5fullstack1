@@ -1,0 +1,179 @@
+<mvc:View
+    controllerName="ui5.walkthrough.controller.Request"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.f"
+    xmlns:formatter="ui5.walkthrough.model.formatter"
+    xmlns:t="sap.ui.table"
+>
+    <f:DynamicPage id="Request" toggleHeaderOnTitleClick="false">
+        <f:content>
+        <l:VerticalLayout>
+            <m:FlexBox alignItems="End" justifyContent="SpaceBetween" wrap="Wrap" class="sapUiSmallMargin">
+            <VBox class="sapUiSmallMarginEnd">
+                <Label text="요청 번호" />
+                <Input width="150px" />
+            </VBox>
+
+            <VBox class="sapUiSmallMarginEnd">
+                <Label text="요청 품목" />
+                <Input width="150px" />
+            </VBox>
+
+            <VBox class="sapUiSmallMarginEnd">
+                <Label text="요청자" />
+                <Input width="150px" />
+            </VBox>
+
+            <VBox class="sapUiSmallMarginEnd">
+                <Label text="요청 일자" />
+                <DatePicker width="150px" />
+            </VBox>
+
+            <VBox class="sapUiSmallMarginEnd">
+                <Label text="처리 상태" />
+                <Select width="150px">
+                    <core:Item
+                        key="전체"
+                        text="전체"
+                    />
+                </Select>
+            </VBox>
+
+            <HBox alignItems="End">
+                <Button
+                    text="검색"
+                    type="Emphasized"
+                    class="sapUiSmallMarginEnd"
+                />
+                <Button text="초기화" />
+            </HBox>
+          </m:FlexBox>
+        </l:VerticalLayout>
+    </f:content>
+        <t:Table
+            id="RequestTable"
+            rows="{request>/Request}"
+            selectionMode="Multi"
+            width="auto"
+        >
+            <!-- Toolbar for Table -->
+            <t:extension>
+                <OverflowToolbar>
+                    <Title
+                        id="TableName"
+                        text="물품 요청 목록"
+                    />
+                    <ToolbarSpacer />
+                    <Button
+                        text="물품 요청 생성"
+                        press="onCreateOrder"
+                        type="Transparent"
+                    />
+                    <Button
+                        icon="sap-icon://sort"
+                        tooltip="정렬"
+                        press="onSort"
+                        type="Transparent"
+                    />
+                </OverflowToolbar>
+            </t:extension>
+
+            <!-- Table Columns -->
+            <t:columns>
+                <t:Column
+                    hAlign="Center"
+                    width="5rem"
+                >
+                    <Label text="" />
+                    <t:template>
+                        <CheckBox
+                            visible="{= ${request>request_state} === 'B' ? true : false}"
+                            selected="{request>CHK}"
+                            textAlign="Center"
+                        />
+                    </t:template>
+                </t:Column>
+
+                <t:Column hAlign="Center">
+                    <Label text="요청 번호" />
+                    <t:template>
+                        <Text text="{request>request_number}" />
+                    </t:template>
+                </t:Column>
+
+                <t:Column hAlign="Center">
+                    <Label text="요청 물품" />
+                    <t:template>
+                        <Text text="{request>request_product}" />
+                    </t:template>
+                </t:Column>
+
+                <t:Column hAlign="Center">
+                    <Label text="물품 개수" />
+                    <t:template>
+                        <Text text="{request>request_quantity}" />
+                    </t:template>
+                </t:Column>
+
+                <t:Column hAlign="Center">
+                    <Label text="요청자" />
+                    <t:template>
+                        <Text text="{request>requestor}" />
+                    </t:template>
+                </t:Column>
+
+                <t:Column hAlign="Center">
+                    <Label text="요청 일자" />
+                    <t:template>
+                        <Text text="{request>request_date}" />
+                    </t:template>
+                </t:Column>
+
+                <t:Column hAlign="Center">
+                    <Label text="처리 상태" />
+                    <t:template>
+                        <ObjectStatus
+                            text="{ path: 'request>request_state', formatter: '.formatter.statusText' }"
+                            state="{
+                        = ${request>request_state} === 'A' ? 'Success' :
+                           ${request>request_state} === 'C' ? 'Error' :
+                           'None' 
+                     }"
+                            active="{
+                        = ${request>request_state} === 'C' ? true : false 
+                     }"
+                            press="onShowRejectReason"
+                        />
+                    </t:template>
+                </t:Column>
+            </t:columns>
+
+            <!-- Table Rows -->
+            <t:rows>
+                <t:Row>
+                    <t:cells>
+                        <Text text="{request>request_number}" />
+                        <Text text="{request>request_product}" />
+                        <Text text="{request>request_quantity}" />
+                        <Text text="{request>requestor}" />
+                        <Text text="{request>request_date}" />
+                        <Text
+                            text="{request>request_state/request_state_kor}"
+                        />
+                    </t:cells>
+                </t:Row>
+            </t:rows>
+        </t:Table>
+    
+    <f:footer>
+			<OverflowToolbar>
+				<ToolbarSpacer/>
+				<Button type="Accept" text="생성"/>
+				<Button type="Reject" text="취소"/>
+			</OverflowToolbar>
+		</f:footer>
+      </f:DynamicPage>
+</mvc:View>

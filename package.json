@@ -14,8 +14,8 @@
     "hdb": "^0.19.9"
   },
   "scripts": {
-    "start": "cds run --port 4005"
-  },
+  "start": "cds run --port 4005"
+},
   "cds": {
     "build": {
       "tasks": [
